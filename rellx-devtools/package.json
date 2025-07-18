@@ -1,0 +1,28 @@
+{
+  "name": "rellx-devtools",
+  "version": "1.0.0",
+  "description": "DevTools для Rellx State Manager",
+  "private": true,
+  "workspaces": [
+    "packages/devtools-ui"
+  ],
+  "scripts": {
+    "dev": "npm run start --workspace=devtools-ui",
+    "build": "npm run build --workspace=devtools-ui",
+    "test": "npm run test --workspaces",
+    "start-server": "node examples/full-devtools-demo.cjs",
+    "start-simple": "node scripts/start-devtools-server.cjs"
+  },
+  "keywords": [
+    "devtools",
+    "state-management",
+    "rellx",
+    "debugging",
+    "time-travel"
+  ],
+  "author": "Rellx Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

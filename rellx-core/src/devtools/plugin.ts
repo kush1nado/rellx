@@ -40,10 +40,8 @@ export class DevToolsPluginManager<T = unknown, P = unknown> {
     }
 
     private initializePlugins(): void {
-        // Регистрируем встроенные плагины
         this.registerBuiltinPlugins();
 
-        // Регистрируем кастомные плагины
         this.config.plugins?.forEach(plugin => {
             this.registerPlugin(plugin);
         });

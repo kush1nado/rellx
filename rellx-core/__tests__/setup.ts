@@ -1,7 +1,5 @@
-// Глобальные настройки для тестов
 import { jest } from '@jest/globals';
 
-// Мокаем performance API для тестов
 Object.defineProperty(global, 'performance', {
     value: {
         now: jest.fn(() => Date.now()),
@@ -18,7 +16,6 @@ Object.defineProperty(global, 'performance', {
     configurable: true
 });
 
-// Мокаем console методы для тестов
 Object.defineProperty(global, 'console', {
     value: {
         ...console,

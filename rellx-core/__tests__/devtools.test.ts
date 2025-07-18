@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { StoreCore } from '../src/core/storeCore';
 import { DevToolsPluginManager, createDevToolsPlugin, createAnalyticsPlugin, createPerformancePlugin } from '../src/devtools/plugin';
-import { DevToolsMessage, DevToolsPlugin } from '../src/devtools/protocol';
+import { DevToolsPlugin } from '../src/devtools/protocol';
 
-// Создаем мок WebSocket без any
 const MockWebSocket = jest.fn().mockImplementation(() => ({
-    readyState: 1, // OPEN
+    readyState: 1,
     send: jest.fn(),
     close: jest.fn(),
     addEventListener: jest.fn(),
@@ -16,13 +15,11 @@ const MockWebSocket = jest.fn().mockImplementation(() => ({
     onerror: null
 }));
 
-// Добавляем статические свойства через Object.defineProperty
 Object.defineProperty(MockWebSocket, 'CONNECTING', { value: 0, writable: false });
 Object.defineProperty(MockWebSocket, 'OPEN', { value: 1, writable: false });
 Object.defineProperty(MockWebSocket, 'CLOSING', { value: 2, writable: false });
 Object.defineProperty(MockWebSocket, 'CLOSED', { value: 3, writable: false });
 
-// Заменяем глобальный WebSocket
 Object.defineProperty(global, 'WebSocket', {
     value: MockWebSocket,
     writable: true,
@@ -66,14 +63,12 @@ describe('DevTools Plugin Manager', () => {
 
         it('should limit history size', () => {
             devTools.connect();
-
-            // Добавляем больше состояний чем лимит
             for (let i = 0; i < 15; i++) {
                 store.setState(prev => ({ count: prev.count + 1 }));
             }
 
             const history = devTools.getStateHistory();
-            expect(history.states).toHaveLength(10); // maxHistorySize
+            expect(history.states).toHaveLength(10);
         });
     });
 
@@ -88,11 +83,11 @@ describe('DevTools Plugin Manager', () => {
             };
 
             devTools.registerPlugin(mockPlugin);
-            expect(devTools.getAllPlugins()).toHaveLength(4); // 3 builtin + 1 custom
+            expect(devTools.getAllPlugins()).toHaveLength(4);
             expect(mockPlugin.onInit).toHaveBeenCalled();
 
             devTools.unregisterPlugin('test-plugin');
-            expect(devTools.getAllPlugins()).toHaveLength(3); // only builtin plugins
+            expect(devTools.getAllPlugins()).toHaveLength(3);
             expect(mockPlugin.onDestroy).toHaveBeenCalled();
         });
 
@@ -171,7 +166,6 @@ describe('DevTools Plugin Manager', () => {
             devTools.registerPlugin(performancePlugin);
             store.setState(prev => ({ count: prev.count + 1 }));
 
-            // Проверяем, что плагин зарегистрирован
             const plugins = devTools.getAllPlugins();
             const perfPlugin = plugins.find(p => p.id === 'custom-performance');
             expect(perfPlugin).toBeDefined();
@@ -182,7 +176,6 @@ describe('DevTools Plugin Manager', () => {
         it('should support time travel functionality', () => {
             devTools.connect();
 
-            // Создаем несколько состояний
             store.setState(prev => ({ count: 1 }));
             store.setState(prev => ({ count: 2 }));
             store.setState(prev => ({ count: 3 }));
@@ -190,7 +183,6 @@ describe('DevTools Plugin Manager', () => {
             const history = devTools.getStateHistory();
             expect(history.states).toHaveLength(3);
 
-            // Путешествуем во времени к первому состоянию
             devTools.timeTravel(0);
             const updatedHistory = devTools.getStateHistory();
             expect(updatedHistory.currentIndex).toBe(0);
@@ -273,9 +265,8 @@ describe('DevTools Plugin Manager', () => {
         it('should handle WebSocket connection errors gracefully', () => {
             const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
-            // Мокаем WebSocket с ошибкой
             const MockWebSocketWithError = jest.fn().mockImplementation(() => ({
-                readyState: 3, // CLOSED
+                readyState: 3,
                 send: jest.fn(),
                 close: jest.fn(),
                 addEventListener: jest.fn(),
@@ -300,7 +291,6 @@ describe('DevTools Plugin Manager', () => {
 
             devTools.connect();
 
-            // Вручную вызываем onerror
             const wsInstance = (MockWebSocketWithError as jest.Mock).mock.results[0].value as { onerror: ((e: Event) => void) | null };
             if (wsInstance.onerror) {
                 wsInstance.onerror(new Event('error'));

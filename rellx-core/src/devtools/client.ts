@@ -89,7 +89,6 @@ export class DevToolsClient<T = unknown, P = unknown> {
         };
 
         this.ws.onerror = (error) => {
-            // Явно вызываем console.error для теста
             console.error('DevTools WebSocket error', error);
         };
     }
@@ -168,7 +167,6 @@ export class DevToolsClient<T = unknown, P = unknown> {
         }
     }
 
-    // Публичные методы
     subscribe(listener: (msg: DevToolsMessage<T, P>) => void): () => void {
         this.listeners.add(listener);
         return () => this.listeners.delete(listener);
@@ -227,7 +225,6 @@ export class DevToolsClient<T = unknown, P = unknown> {
     jumpToAction(actionId: string): void {
         const actionIndex = this.stateHistory.actions.findIndex(a => a.id === actionId);
         if (actionIndex !== -1) {
-            // Находим соответствующее состояние для этого действия
             const stateIndex = this.stateHistory.states.findIndex(s => s.actionId === actionId);
             if (stateIndex !== -1) {
                 this.stateHistory.currentIndex = stateIndex;
