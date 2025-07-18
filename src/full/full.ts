@@ -1,8 +1,8 @@
-import { Core } from '../core';
+import { StoreCore } from '../core';
 
 type Middleware<T> = (store: StoreFull<T>) => (next: Function) => (updater: Function) => void;
 
-export class StoreFull<T> extends Core<T> {
+export class StoreFull<T> extends StoreCore<T> {
     private middlewares: Middleware<T>[] = [];
 
     constructor(initialState: T) {
