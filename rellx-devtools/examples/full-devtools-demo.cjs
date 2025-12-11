@@ -93,7 +93,7 @@ class DemoStore {
 const store = new DemoStore();
 
 const wss = new WebSocketServer({ port: 8097 });
-console.log("🚀 DevTools Demo Server запущен на ws://localhost:8097");
+console.log("[SERVER] DevTools Demo Server запущен на ws://localhost:8097");
 
 let messageCounter = 0;
 let connectionCount = 0;
@@ -105,7 +105,7 @@ wss.on("connection", (ws) => {
   const now = Date.now();
 
   if (now - lastConnectionTime < connectionDebounce) {
-    console.log("🔌 Игнорируем частое подключение");
+    console.log("[CONN] Игнорируем частое подключение");
     ws.close(1000, "Too frequent connections");
     return;
   }
@@ -114,13 +114,13 @@ wss.on("connection", (ws) => {
   lastConnectionTime = now;
 
   if (connectionCount > maxConnections) {
-    console.log("🔌 Уже есть подключение, закрываем новое");
+    console.log("[CONN] Уже есть подключение, закрываем новое");
     ws.close(1000, "Already connected");
     connectionCount--;
     return;
   }
 
-  console.log("🔌 DevTools UI подключился");
+  console.log("[CONN] DevTools UI подключился");
 
   const initMessage = {
     type: "INIT",
@@ -134,7 +134,7 @@ wss.on("connection", (ws) => {
 
   ws.on("close", () => {
     connectionCount--;
-    console.log("🔌 DevTools UI отключился");
+    console.log("[CONN] DevTools UI отключился");
   });
 });
 
@@ -173,12 +173,12 @@ let actionIndex = 0;
 
 const actionInterval = setInterval(() => {
   if (actionIndex >= actions.length) {
-    console.log("🔄 Демо завершено! Начинаем цикл заново...");
+    console.log("[DEMO] Демо завершено! Начинаем цикл заново...");
     actionIndex = 0; // Сбрасываем индекс для бесконечного цикла
   }
 
   const { name, action } = actions[actionIndex];
-  console.log(`🎯 Выполняем действие: ${name}`);
+  console.log(`[ACTION] Выполняем действие: ${name}`);
 
   action();
 
@@ -207,11 +207,11 @@ const actionInterval = setInterval(() => {
 }, 3000);
 
 process.on("SIGINT", () => {
-  console.log("\n🛑 Останавливаем демо сервер...");
+  console.log("\n[SERVER] Останавливаем демо сервер...");
   clearInterval(actionInterval);
   wss.close();
   process.exit(0);
 });
 
-console.log("📡 Сервер готов! Откройте DevTools UI в браузере");
-console.log("🎯 Демо будет выполнять действия каждые 3 секунды");
+console.log("[SERVER] Сервер готов! Откройте DevTools UI в браузере");
+console.log("[INFO] Демо будет выполнять действия каждые 3 секунды");
