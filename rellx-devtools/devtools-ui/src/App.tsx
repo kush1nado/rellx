@@ -77,11 +77,18 @@ function App() {
           event.reason
         );
 
-        if (event.code !== 1000 && event.reason !== "Too many connections") {
+        // Не переподключаемся если это нормальное закрытие или блокировка сервера
+        const skipReconnect =
+          event.code === 1000 ||
+          event.reason === "Too many connections" ||
+          event.reason === "Too frequent connections" ||
+          event.reason === "Already connected";
+
+        if (!skipReconnect) {
           setTimeout(() => {
             console.log("Attempting to reconnect...");
             connect();
-          }, 3000);
+          }, 5000); // Увеличена задержка до 5 секунд
         }
       };
 
@@ -194,12 +201,17 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // Подключаемся только один раз при монтировании
     connect();
 
     return () => {
-      disconnect();
+      // Отключаемся при размонтировании
+      if (ws) {
+        ws.close();
+      }
     };
-  }, [connect, disconnect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Пустой массив зависимостей - выполняется только один раз
 
   return (
     <div className="App">

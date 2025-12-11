@@ -173,9 +173,8 @@ let actionIndex = 0;
 
 const actionInterval = setInterval(() => {
   if (actionIndex >= actions.length) {
-    console.log("✅ Демо завершено!");
-    clearInterval(actionInterval);
-    return;
+    console.log("🔄 Демо завершено! Начинаем цикл заново...");
+    actionIndex = 0; // Сбрасываем индекс для бесконечного цикла
   }
 
   const { name, action } = actions[actionIndex];
