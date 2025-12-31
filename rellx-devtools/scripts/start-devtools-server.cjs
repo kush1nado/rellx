@@ -23,13 +23,13 @@ wss.on("connection", (ws) => {
   lastConnectionTime = now;
 
   if (connectionCount > maxConnections) {
-    console.log("🔌 Уже есть подключение, закрываем новое");
+    console.log("[CONN] Уже есть подключение, закрываем новое");
     ws.close(1000, "Already connected");
     connectionCount--;
     return;
   }
 
-  console.log("🔌 DevTools UI подключился");
+  console.log("[CONN] DevTools UI подключился");
 
   const initMessage = {
     type: "INIT",

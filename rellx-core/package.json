@@ -2,9 +2,27 @@
   "type": "module",
   "name": "rellx",
   "version": "1.0.0",
+  "description": "Universal state manager for JavaScript and TypeScript applications",
+  "keywords": [
+    "state-management",
+    "state",
+    "store",
+    "reactive",
+    "typescript",
+    "javascript",
+    "middleware",
+    "plugins"
+  ],
+  "author": "kush1nado",
+  "license": "Apache-2.0",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
@@ -12,12 +30,12 @@
       "require": "./dist/index.cjs"
     },
     "./light": {
-      "types": "./dist/types/light.d.ts",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./full": {
-      "types": "./dist/types/full.d.ts",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }

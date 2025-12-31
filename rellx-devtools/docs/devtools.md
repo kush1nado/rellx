@@ -11,7 +11,7 @@
 - **WebSocket** - реальное время отладки
 - **TypeScript** - полная типизация
 
-## 📦 Установка
+## Установка
 
 ```bash
 npm install rellx
@@ -100,7 +100,7 @@ const performancePlugin = createPerformancePlugin({
 devTools.registerPlugin(performancePlugin);
 ```
 
-## ⏰ Time Travel
+## Time Travel
 
 ```typescript
 // Прыжок к конкретному состоянию
@@ -129,7 +129,7 @@ const history = devTools.getStateHistory();
 console.log(history.states.length); // количество состояний
 ```
 
-## 💾 Экспорт/Импорт
+## Экспорт/Импорт
 
 ```typescript
 // Экспорт состояния
@@ -183,7 +183,7 @@ describe("DevTools", () => {
 });
 ```
 
-## 📋 API Reference
+## API Reference
 
 ### DevToolsPluginManager
 
