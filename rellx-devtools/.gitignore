@@ -1,44 +1,36 @@
 # Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+.pnp
+.pnp.js
 
-# Production builds
+# Testing
+coverage/
+
+# Production
 build/
 dist/
-*.tgz
 
-# Environment variables
-.env
+# Extension build files (generated)
+extension/devtools/panel/static/
+extension/devtools/panel/index.html
+extension/devtools/panel/asset-manifest.json
+extension/devtools/panel/*.map
+extension/icons/*.png
+
+# Keep structure but ignore built content
+!extension/devtools/panel/panel.html
+!extension/devtools/devtools.html
+!extension/devtools/devtools.js
+!extension/manifest.json
+!extension/icons/icon.svg
+
+# Misc
+.DS_Store
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-logs/
-*.log
-
-# Runtime data
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-
-# Temporary folders
-tmp/
-temp/ 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

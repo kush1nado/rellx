@@ -14,11 +14,11 @@ DevTools для Rellx State Manager - мощные инструменты для
 
 ```
 rellx-devtools/
-├── packages/
-│   └── devtools-ui/          # React DevTools UI
-├── examples/                  # Примеры использования
-├── scripts/                   # Серверные скрипты
-└── package.json              # Монорепозиторий конфигурация
+├── devtools-ui/              # React DevTools UI
+├── extension/                # Browser Extension для Chrome/Edge
+├── examples/                 # Примеры использования
+├── scripts/                  # Серверные скрипты и утилиты
+└── package.json             # Конфигурация проекта
 ```
 
 ## Установка и запуск
@@ -47,6 +47,46 @@ npm run start-simple
 npm run start-server
 ```
 
+## Browser Extension
+
+Rellx DevTools доступен как расширение для Chrome/Edge, которое интегрируется в браузерные DevTools.
+
+### Установка расширения
+
+1. **Соберите extension:**
+
+```bash
+# Генерируем иконки (первый раз)
+npm run generate-icons
+
+# Собираем extension
+npm run build:extension
+```
+
+2. **Загрузите в Chrome/Edge:**
+
+   - Откройте браузер и перейдите в `chrome://extensions/` (или `edge://extensions/`)
+   - Включите "Режим разработчика" (Developer mode) в правом верхнем углу
+   - Нажмите "Загрузить распакованное расширение" (Load unpacked)
+   - Выберите папку `extension` в директории `rellx-devtools`
+
+3. **Используйте расширение:**
+
+   - Откройте любую веб-страницу
+   - Откройте DevTools (F12)
+   - Вы увидите новую вкладку "Rellx"
+   - Кликните на неё для открытия DevTools UI
+
+### Обновление расширения
+
+После изменений в коде:
+
+```bash
+npm run build:extension
+```
+
+Затем в `chrome://extensions/` нажмите кнопку обновления (↻) у расширения Rellx DevTools.
+
 ## Использование
 
 ### 1. Запустите DevTools сервер
@@ -57,10 +97,18 @@ node scripts/start-devtools-server.cjs
 
 ### 2. Откройте DevTools UI
 
+**Вариант A: Через веб-интерфейс**
+
 ```bash
-cd packages/devtools-ui
+cd devtools-ui
 npm start
 ```
+
+Откройте браузер: http://localhost:3000
+
+**Вариант B: Через Browser Extension (рекомендуется)**
+
+Расширение уже установлено (см. раздел [Browser Extension](#browser-extension) выше). Просто откройте DevTools браузера (F12) и перейдите на вкладку "Rellx".
 
 ### 3. Интеграция с вашим приложением
 

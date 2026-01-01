@@ -1,3 +1,13 @@
 node_modules
 dist
 .idea
+
+# DevTools extension build files
+rellx-devtools/extension/devtools/panel/static/
+rellx-devtools/extension/devtools/panel/index.html
+rellx-devtools/extension/devtools/panel/asset-manifest.json
+rellx-devtools/extension/devtools/panel/*.map
+rellx-devtools/extension/icons/*.png
+
+# React build
+rellx-devtools/devtools-ui/build/
