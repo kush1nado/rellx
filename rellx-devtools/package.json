@@ -9,9 +9,12 @@
   "scripts": {
     "dev": "npm run start --workspace=devtools-ui",
     "build": "npm run build --workspace=devtools-ui",
+    "build:extension": "node scripts/build-extension.js",
+    "generate-icons": "node scripts/generate-icons.js",
     "test": "npm run test --workspaces",
     "start-server": "node examples/full-devtools-demo.cjs",
-    "start-simple": "node scripts/start-devtools-server.cjs"
+    "start-simple": "node scripts/start-devtools-server.cjs",
+    "version": "node scripts/version.js"
   },
   "keywords": [
     "devtools",
@@ -23,7 +26,8 @@
   "author": "Rellx Team",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "sharp": "^0.34.5"
   },
   "dependencies": {
     "ws": "^8.18.3"

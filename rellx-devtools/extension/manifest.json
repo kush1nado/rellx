@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Rellx DevTools",
+  "version": "1.0.0",
+  "description": "DevTools для Rellx State Manager",
+  "devtools_page": "devtools/devtools.html",
+  "permissions": [
+    "tabs",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://localhost/*",
+    "ws://localhost:*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
+
