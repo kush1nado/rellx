@@ -1,57 +1,57 @@
 # Rellx DevTools UI
 
-Веб-интерфейс для отладки состояния Rellx store в реальном времени.
+Web interface for debugging Rellx store state in real-time.
 
-## Возможности
+## Features
 
-- **Отслеживание состояния в реальном времени**
-- **Time Travel** - перемещение по истории состояний
-- **Статистика** - количество действий и изменений
-- **Переход к действиям** - клик по действию для перехода к состоянию
-- **Современный темный интерфейс**
-- **Адаптивный дизайн**
+- **Real-time state tracking**
+- **Time Travel** - navigate through state history
+- **Statistics** - action and change counts
+- **Action navigation** - click on action to jump to state
+- **Modern dark interface**
+- **Responsive design**
 
-## Установка и запуск
+## Installation and Setup
 
-1. Установите зависимости:
+1. Install dependencies:
 
 ```bash
 cd devtools-ui
 npm install
 ```
 
-2. Запустите DevTools UI:
+2. Start DevTools UI:
 
 ```bash
 npm start
 ```
 
-3. Откройте браузер: http://localhost:3000
+3. Open browser: http://localhost:3000
 
-## Как использовать
+## How to Use
 
-1. **Запустите ваш код** с подключенными DevTools
-2. **Откройте DevTools UI** в браузере
-3. **Наблюдайте** за изменениями состояния в реальном времени
-4. **Используйте Time Travel** для отладки
+1. **Run your code** with DevTools connected
+2. **Open DevTools UI** in browser
+3. **Observe** state changes in real-time
+4. **Use Time Travel** for debugging
 
-## Интерфейс
+## Interface
 
-### Левая панель
+### Left Panel
 
-- **Actions** - список всех действий с временными метками
-- **Time Travel** - кнопки для навигации по истории
+- **Actions** - list of all actions with timestamps
+- **Time Travel** - buttons for history navigation
 
-### Правая панель
+### Right Panel
 
-- **Current State** - текущее состояние в JSON формате
-- **Statistics** - статистика действий и изменений
+- **Current State** - current state in JSON format
+- **Statistics** - action and change statistics
 
-## Подключение к вашему коду
+## Connecting to Your Code
 
-DevTools UI автоматически подключается к WebSocket серверу на `ws://localhost:8097`.
+DevTools UI automatically connects to WebSocket server at `ws://localhost:8097`.
 
-Убедитесь, что ваш код создает DevTools сервер:
+Make sure your code creates a DevTools server:
 
 ```typescript
 import { createDevToolsPlugin } from "rellx/devtools";
@@ -61,37 +61,37 @@ const devTools = createDevToolsPlugin(store, {
   enableTimeTravel: true,
 });
 
-devTools.connect(); // Подключается к ws://localhost:8097
+devTools.connect(); // Connects to ws://localhost:8097
 ```
 
-## Горячие клавиши
+## Keyboard Shortcuts
 
-- `Ctrl+Shift+D` - открыть DevTools (если встроен в приложение)
-- `Escape` - закрыть DevTools
+- `Ctrl+Shift+D` - open DevTools (if embedded in application)
+- `Escape` - close DevTools
 
-## Разработка
+## Development
 
 ```bash
-# Запуск в режиме разработки
+# Run in development mode
 npm start
 
-# Сборка для продакшена
+# Build for production
 npm run build
 
-# Запуск тестов
+# Run tests
 npm test
 ```
 
-## Структура проекта
+## Project Structure
 
 ```
 devtools-ui/
 ├── src/
-│   ├── App.tsx          # Основной компонент
-│   ├── App.css          # Стили
-│   ├── index.tsx        # Точка входа
-│   └── index.css        # Базовые стили
+│   ├── App.tsx          # Main component
+│   ├── App.css          # Styles
+│   ├── index.tsx        # Entry point
+│   └── index.css        # Base styles
 ├── public/
-│   └── index.html       # HTML шаблон
-└── package.json         # Зависимости
+│   └── index.html       # HTML template
+└── package.json         # Dependencies
 ```

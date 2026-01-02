@@ -1,159 +1,159 @@
 # Rellx DevTools
 
-DevTools для Rellx State Manager - мощные инструменты для отладки и мониторинга состояния приложения.
+DevTools for Rellx State Manager - powerful tools for debugging and monitoring application state.
 
-## Возможности
+## Features
 
-- **Time Travel Debugging** - путешествие по истории состояний
-- **Action History** - полная история действий с временными метками
-- **Real-time State Monitoring** - мониторинг состояния в реальном времени
-- **WebSocket Communication** - быстрая связь с приложением
-- **Modern UI** - современный интерфейс в стиле DevTools
+- **Time Travel Debugging** - navigate through state history
+- **Action History** - complete history of actions with timestamps
+- **Real-time State Monitoring** - real-time state monitoring
+- **WebSocket Communication** - fast communication with application
+- **Modern UI** - modern DevTools-style interface
 
-## Структура проекта
+## Project Structure
 
 ```
 rellx-devtools/
 ├── devtools-ui/              # React DevTools UI
-├── extension/                # Browser Extension для Chrome/Edge
-├── examples/                 # Примеры использования
-├── scripts/                  # Серверные скрипты и утилиты
-└── package.json             # Конфигурация проекта
+├── extension/                # Browser Extension for Chrome/Edge
+├── examples/                 # Usage examples
+├── scripts/                  # Server scripts and utilities
+└── package.json             # Project configuration
 ```
 
-## Установка и запуск
+## Installation and Setup
 
-### Установка зависимостей
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-### Запуск DevTools UI
+### Run DevTools UI
 
 ```bash
 npm run dev
 ```
 
-DevTools UI будет доступен по адресу: http://localhost:3000
+DevTools UI will be available at: http://localhost:3000
 
-### Запуск демо сервера
+### Run Demo Server
 
 ```bash
-# Простой тестовый сервер
+# Simple test server
 npm run start-simple
 
-# Полный демо с реалистичными данными
+# Full demo with realistic data
 npm run start-server
 ```
 
 ## Browser Extension
 
-Rellx DevTools доступен как расширение для Chrome/Edge, которое интегрируется в браузерные DevTools.
+Rellx DevTools is available as a Chrome/Edge extension that integrates into browser DevTools.
 
-### Установка расширения
+### Installing the Extension
 
-1. **Соберите extension:**
+1. **Build the extension:**
 
 ```bash
-# Генерируем иконки (первый раз)
+# Generate icons (first time only)
 npm run generate-icons
 
-# Собираем extension
+# Build extension
 npm run build:extension
 ```
 
-2. **Загрузите в Chrome/Edge:**
+2. **Load into Chrome/Edge:**
 
-   - Откройте браузер и перейдите в `chrome://extensions/` (или `edge://extensions/`)
-   - Включите "Режим разработчика" (Developer mode) в правом верхнем углу
-   - Нажмите "Загрузить распакованное расширение" (Load unpacked)
-   - Выберите папку `extension` в директории `rellx-devtools`
+   - Open browser and navigate to `chrome://extensions/` (or `edge://extensions/`)
+   - Enable "Developer mode" in the top right corner
+   - Click "Load unpacked"
+   - Select the `extension` folder in the `rellx-devtools` directory
 
-3. **Используйте расширение:**
+3. **Use the extension:**
 
-   - Откройте любую веб-страницу
-   - Откройте DevTools (F12)
-   - Вы увидите новую вкладку "Rellx"
-   - Кликните на неё для открытия DevTools UI
+   - Open any web page
+   - Open DevTools (F12)
+   - You will see a new "Rellx" tab
+   - Click on it to open DevTools UI
 
-### Обновление расширения
+### Updating the Extension
 
-После изменений в коде:
+After code changes:
 
 ```bash
 npm run build:extension
 ```
 
-Затем в `chrome://extensions/` нажмите кнопку обновления (↻) у расширения Rellx DevTools.
+Then in `chrome://extensions/` click the refresh button (↻) on the Rellx DevTools extension.
 
-## Использование
+## Usage
 
-### 1. Запустите DevTools сервер
+### 1. Start DevTools Server
 
 ```bash
 node scripts/start-devtools-server.cjs
 ```
 
-### 2. Откройте DevTools UI
+### 2. Open DevTools UI
 
-**Вариант A: Через веб-интерфейс**
+**Option A: Via Web Interface**
 
 ```bash
 cd devtools-ui
 npm start
 ```
 
-Откройте браузер: http://localhost:3000
+Open browser: http://localhost:3000
 
-**Вариант B: Через Browser Extension (рекомендуется)**
+**Option B: Via Browser Extension (recommended)**
 
-Расширение уже установлено (см. раздел [Browser Extension](#browser-extension) выше). Просто откройте DevTools браузера (F12) и перейдите на вкладку "Rellx".
+The extension is already installed (see [Browser Extension](#browser-extension) section above). Simply open browser DevTools (F12) and go to the "Rellx" tab.
 
-### 3. Интеграция с вашим приложением
+### 3. Integration with Your Application
 
 ```javascript
-// В вашем приложении
+// In your application
 import { createStore } from "rellx";
 
 const store = createStore({
-  // ваша конфигурация
+  // your configuration
 });
 
-// Подключение к DevTools (опционально)
+// Connect to DevTools (optional)
 if (process.env.NODE_ENV === "development") {
   store.connectToDevTools("ws://localhost:8097");
 }
 ```
 
-## Основные функции
+## Key Features
 
 ### Time Travel
 
-- Перемещение по истории состояний
-- Воспроизведение действий
-- Сравнение состояний
+- Navigate through state history
+- Replay actions
+- Compare states
 
 ### Action History
 
-- Полная история всех действий
-- Временные метки
-- Детали действий
+- Complete history of all actions
+- Timestamps
+- Action details
 
 ### State Monitoring
 
-- Текущее состояние в реальном времени
-- JSON просмотрщик
-- Статистика
+- Current state in real-time
+- JSON viewer
+- Statistics
 
 ## WebSocket Protocol
 
-DevTools использует простой WebSocket протокол:
+DevTools uses a simple WebSocket protocol:
 
-### Сообщения от сервера:
+### Messages from server:
 
 ```javascript
-// Инициализация
+// Initialization
 {
   type: "INIT",
   payload: { state: {...} },
@@ -161,7 +161,7 @@ DevTools использует простой WebSocket протокол:
   id: "init_1234567890"
 }
 
-// Обновление состояния
+// State update
 {
   type: "UPDATE",
   payload: {
@@ -177,12 +177,12 @@ DevTools использует простой WebSocket протокол:
 }
 ```
 
-## Тестирование
+## Testing
 
 ```bash
 npm test
 ```
 
-## Лицензия
+## License
 
 MIT

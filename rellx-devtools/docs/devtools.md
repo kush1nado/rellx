@@ -1,45 +1,45 @@
 # Rellx DevTools
 
-Мощная система DevTools для Rellx с поддержкой кастомных плагинов, time travel и аналитики.
+Powerful DevTools system for Rellx with support for custom plugins, time travel, and analytics.
 
-## Возможности
+## Features
 
-- **Time Travel** - путешествие по истории состояний
-- **Кастомные плагины** - создание собственных плагинов
-- **Аналитика** - отслеживание действий и производительности
-- **Экспорт/Импорт** - сохранение и загрузка состояния
-- **WebSocket** - реальное время отладки
-- **TypeScript** - полная типизация
+- **Time Travel** - navigate through state history
+- **Custom plugins** - create your own plugins
+- **Analytics** - track actions and performance
+- **Export/Import** - save and load state
+- **WebSocket** - real-time debugging
+- **TypeScript** - full type definitions
 
-## Установка
+## Installation
 
 ```bash
 npm install rellx
 ```
 
-## Базовое использование
+## Basic Usage
 
 ```typescript
 import { StoreCore } from "rellx";
 import { createDevToolsPlugin } from "rellx/devtools";
 
-// Создаем store
+// Create store
 const store = new StoreCore({ count: 0 });
 
-// Создаем DevTools
+// Create DevTools
 const devTools = createDevToolsPlugin(store, {
   name: "MyStore",
   maxHistorySize: 50,
   enableTimeTravel: true,
 });
 
-// Подключаемся
+// Connect
 devTools.connect();
 ```
 
-## Кастомные плагины
+## Custom Plugins
 
-### Создание плагина
+### Creating a Plugin
 
 ```typescript
 import { DevToolsPlugin } from "rellx/devtools";
@@ -66,11 +66,11 @@ const myPlugin: DevToolsPlugin<MyState, MyAction> = {
   },
 };
 
-// Регистрируем плагин
+// Register plugin
 devTools.registerPlugin(myPlugin);
 ```
 
-### Встроенные плагины
+### Built-in Plugins
 
 #### Analytics Plugin
 
@@ -103,40 +103,40 @@ devTools.registerPlugin(performancePlugin);
 ## Time Travel
 
 ```typescript
-// Прыжок к конкретному состоянию
+// Jump to specific state
 devTools.timeTravel(0);
 
-// Прыжок к конкретному действию
+// Jump to specific action
 devTools.jumpToAction("action-id");
 
-// Прыжок к конкретному стейту
+// Jump to specific state
 devTools.jumpToState("state-id");
 ```
 
-## Аналитика
+## Analytics
 
 ```typescript
-// Статистика действий
+// Action statistics
 const stats = devTools.getActionStats();
 console.log(stats); // { 'STATE_UPDATE': 5, 'CUSTOM_ACTION': 2 }
 
-// Частота изменений состояния
+// State change frequency
 const frequency = devTools.getStateChangeFrequency();
-console.log(frequency); // 2.5 (изменений в секунду)
+console.log(frequency); // 2.5 (changes per second)
 
-// История состояний
+// State history
 const history = devTools.getStateHistory();
-console.log(history.states.length); // количество состояний
+console.log(history.states.length); // number of states
 ```
 
-## Экспорт/Импорт
+## Export/Import
 
 ```typescript
-// Экспорт состояния
+// Export state
 const exported = devTools.exportState();
 localStorage.setItem("rellx-state", exported);
 
-// Импорт состояния
+// Import state
 const imported = localStorage.getItem("rellx-state");
 if (imported) {
   devTools.importState(imported);
@@ -145,26 +145,26 @@ if (imported) {
 
 ## WebSocket API
 
-### Подключение к DevTools UI
+### Connecting to DevTools UI
 
 ```typescript
-// Подключение к DevTools серверу
+// Connect to DevTools server
 devTools.connect("ws://localhost:8097");
 
-// Отключение
+// Disconnect
 devTools.disconnect();
 ```
 
-### Отправка кастомных сообщений
+### Sending Custom Messages
 
 ```typescript
-// Отправка сообщения плагину
+// Send message to plugin
 devTools.sendCustomPluginMessage("my-plugin", "CUSTOM_EVENT", {
   data: "some data",
 });
 ```
 
-## Тестирование
+## Testing
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -187,23 +187,23 @@ describe("DevTools", () => {
 
 ### DevToolsPluginManager
 
-#### Методы
+#### Methods
 
-- `connect(url?: string)` - подключение к DevTools
-- `disconnect()` - отключение
-- `registerPlugin(plugin)` - регистрация плагина
-- `unregisterPlugin(pluginId)` - удаление плагина
-- `timeTravel(index)` - прыжок по времени
-- `jumpToAction(actionId)` - прыжок к действию
-- `jumpToState(stateId)` - прыжок к состоянию
-- `exportState()` - экспорт состояния
-- `importState(data)` - импорт состояния
-- `getActionStats()` - статистика действий
-- `getStateChangeFrequency()` - частота изменений
-- `getStateHistory()` - история состояний
-- `clearHistory()` - очистка истории
+- `connect(url?: string)` - connect to DevTools
+- `disconnect()` - disconnect
+- `registerPlugin(plugin)` - register plugin
+- `unregisterPlugin(pluginId)` - remove plugin
+- `timeTravel(index)` - time travel
+- `jumpToAction(actionId)` - jump to action
+- `jumpToState(stateId)` - jump to state
+- `exportState()` - export state
+- `importState(data)` - import state
+- `getActionStats()` - action statistics
+- `getStateChangeFrequency()` - change frequency
+- `getStateHistory()` - state history
+- `clearHistory()` - clear history
 
-#### Конфигурация
+#### Configuration
 
 ```typescript
 interface DevToolsConfig {
@@ -231,9 +231,9 @@ interface DevToolsPlugin<T, P> {
 }
 ```
 
-## Примеры
+## Examples
 
-### Плагин для логирования
+### Logging Plugin
 
 ```typescript
 const loggerPlugin: DevToolsPlugin<MyState, MyAction> = {
@@ -251,7 +251,7 @@ const loggerPlugin: DevToolsPlugin<MyState, MyAction> = {
 };
 ```
 
-### Плагин для мониторинга производительности
+### Performance Monitoring Plugin
 
 ```typescript
 const performancePlugin: DevToolsPlugin<MyState, MyAction> = {
@@ -267,7 +267,7 @@ const performancePlugin: DevToolsPlugin<MyState, MyAction> = {
 };
 ```
 
-### Плагин для аналитики
+### Analytics Plugin
 
 ```typescript
 const analyticsPlugin: DevToolsPlugin<MyState, MyAction> = {
@@ -276,7 +276,7 @@ const analyticsPlugin: DevToolsPlugin<MyState, MyAction> = {
   version: "1.0.0",
 
   onStateChange: (state, action) => {
-    // Отправка в Google Analytics
+    // Send to Google Analytics
     gtag("event", "state_change", {
       action_type: action.type,
       state_size: JSON.stringify(state).length,
@@ -285,12 +285,12 @@ const analyticsPlugin: DevToolsPlugin<MyState, MyAction> = {
 };
 ```
 
-## Конфигурация
+## Configuration
 
 ### TypeScript
 
 ```typescript
-// Определение типов
+// Type definitions
 interface AppState {
   user: User | null;
   settings: Settings;
@@ -301,7 +301,7 @@ interface AppAction {
   payload?: unknown;
 }
 
-// Создание DevTools с типизацией
+// Create DevTools with types
 const devTools = createDevToolsPlugin<AppState, AppAction>(store, {
   name: "AppStore",
   plugins: [
@@ -312,25 +312,25 @@ const devTools = createDevToolsPlugin<AppState, AppAction>(store, {
 });
 ```
 
-## Производительность
+## Performance
 
-- **Ленивая загрузка** - плагины загружаются только при необходимости
-- **Ограничение истории** - автоматическое удаление старых состояний
-- **WebSocket оптимизация** - батчинг сообщений
-- **Memory management** - автоматическая очистка ресурсов
+- **Lazy loading** - plugins load only when needed
+- **History limiting** - automatic removal of old states
+- **WebSocket optimization** - message batching
+- **Memory management** - automatic resource cleanup
 
-## Безопасность
+## Security
 
-- **Валидация данных** - проверка входящих сообщений
-- **Изоляция плагинов** - плагины не могут влиять друг на друга
-- **Ограничение доступа** - плагины имеют доступ только к своим данным
+- **Data validation** - validate incoming messages
+- **Plugin isolation** - plugins cannot affect each other
+- **Access restrictions** - plugins have access only to their own data
 
-## Сообщество
+## Community
 
-- **GitHub Issues** - для багов и предложений
-- **Discussions** - для обсуждений
-- **Contributing** - для вклада в проект
+- **GitHub Issues** - for bugs and suggestions
+- **Discussions** - for discussions
+- **Contributing** - for contributing to the project
 
-## Лицензия
+## License
 
 MIT License

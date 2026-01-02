@@ -1,50 +1,50 @@
 # Rellx
 
-Универсальный менеджер состояния для JavaScript и TypeScript приложений. Rellx предоставляет простой и мощный API для управления состоянием с поддержкой реактивности, middleware, плагинов и DevTools.
+Universal state manager for JavaScript and TypeScript applications. Rellx provides a simple and powerful API for state management with support for reactivity, middleware, plugins, and DevTools.
 
-## Что это такое?
+## What is it?
 
-Rellx - это библиотека для управления состоянием, которая решает проблему синхронизации данных между различными частями приложения. Она создана с учетом простоты использования, производительности и гибкости.
+Rellx is a state management library that solves the problem of data synchronization between different parts of an application. It's built with simplicity, performance, and flexibility in mind.
 
-Библиотека предлагает три режима работы:
-- **Light** - минималистичный вариант с базовым функционалом
-- **Full** - полная версия с поддержкой middleware
-- **Reactive** - реактивная версия с автоматическим отслеживанием изменений
+The library offers three modes of operation:
+- **Light** - minimalistic version with basic functionality
+- **Full** - full version with middleware support
+- **Reactive** - reactive version with automatic change tracking
 
-## Основные возможности
+## Key Features
 
-- **Простой API** - интуитивно понятный интерфейс для работы с состоянием
-- **TypeScript поддержка** - полная типизация из коробки
-- **Реактивность** - автоматическое отслеживание изменений вложенных объектов
-- **Middleware** - расширяемость через систему middleware
-- **Плагины** - поддержка кастомных плагинов для расширения функциональности
-- **DevTools** - инструменты для отладки и мониторинга состояния
-- **Небольшой размер** - легковесная библиотека без лишних зависимостей
-- **Универсальность** - работает в браузере и Node.js
+- **Simple API** - intuitive interface for working with state
+- **TypeScript support** - full type definitions out of the box
+- **Reactivity** - automatic tracking of nested object changes
+- **Middleware** - extensibility through middleware system
+- **Plugins** - support for custom plugins to extend functionality
+- **DevTools** - tools for debugging and monitoring state
+- **Small size** - lightweight library without unnecessary dependencies
+- **Universal** - works in browser and Node.js
 
-## Установка
+## Installation
 
 ```bash
 npm install rellx
 ```
 
-или
+or
 
 ```bash
 yarn add rellx
 ```
 
-или
+or
 
 ```bash
 pnpm add rellx
 ```
 
-## Быстрый старт
+## Quick Start
 
-### Light версия
+### Light Version
 
-Самая простая версия для базового управления состоянием:
+The simplest version for basic state management:
 
 ```typescript
 import { createLightStore } from 'rellx';
@@ -59,27 +59,27 @@ const store = createLightStore<State>({
   user: null
 });
 
-// Подписка на изменения
+// Subscribe to changes
 const unsubscribe = store.subscribe((state) => {
   console.log('State changed:', state);
 });
 
-// Обновление состояния
+// Update state
 store.setState((prev) => ({
   ...prev,
   count: prev.count + 1
 }));
 
-// Получение текущего состояния
+// Get current state
 const currentState = store.getState();
 
-// Отписка
+// Unsubscribe
 unsubscribe();
 ```
 
-### Full версия с middleware
+### Full Version with Middleware
 
-Версия с поддержкой middleware для более сложных сценариев:
+Version with middleware support for more complex scenarios:
 
 ```typescript
 import { createFullStore, loggerMiddleware } from 'rellx/full';
@@ -94,26 +94,26 @@ const store = createFullStore<State>({
   filter: 'all'
 });
 
-// Добавление middleware
+// Add middleware
 store.use(loggerMiddleware);
 
-// Создание кастомного middleware
+// Create custom middleware
 store.use((store) => (next) => (updater) => {
   console.log('Before update:', store.getState());
   next(updater);
   console.log('After update:', store.getState());
 });
 
-// Использование
+// Usage
 store.setState((prev) => ({
   ...prev,
   todos: [...prev.todos, { id: 1, text: 'New todo', completed: false }]
 }));
 ```
 
-### Reactive версия
+### Reactive Version
 
-Реактивная версия с автоматическим отслеживанием изменений:
+Reactive version with automatic change tracking:
 
 ```typescript
 import { createReactiveStore } from 'rellx';
@@ -140,35 +140,35 @@ const store = createReactiveStore<State>({
   counter: 0
 });
 
-// Подписка на изменения
+// Subscribe to changes
 store.subscribe((state) => {
   console.log('State updated:', state);
 });
 
-// Прямое изменение свойств - изменения отслеживаются автоматически
+// Direct property changes - changes are tracked automatically
 store.reactive.counter = 10;
 store.reactive.user.name = 'Jane';
 store.reactive.user.preferences.theme = 'dark';
 
-// Все изменения автоматически триггерят подписчиков
+// All changes automatically trigger subscribers
 ```
 
 ## API
 
 ### StoreCore
 
-Базовый класс для всех версий стора.
+Base class for all store versions.
 
-#### Методы
+#### Methods
 
-- `getState(): T` - получить текущее состояние
-- `setState(updater: (prevState: T) => T): void` - обновить состояние
-- `subscribe(listener: (state: T) => void): () => void` - подписаться на изменения, возвращает функцию отписки
-- `destroy(): void` - уничтожить стор и очистить все подписки
+- `getState(): T` - get current state
+- `setState(updater: (prevState: T) => T): void` - update state
+- `subscribe(listener: (state: T) => void): () => void` - subscribe to changes, returns unsubscribe function
+- `destroy(): void` - destroy store and clear all subscriptions
 
 ### Light Store
 
-Простая версия без дополнительных функций.
+Simple version without additional features.
 
 ```typescript
 import { createLightStore } from 'rellx';
@@ -178,42 +178,42 @@ const store = createLightStore(initialState);
 
 ### Full Store
 
-Версия с поддержкой middleware.
+Version with middleware support.
 
 ```typescript
 import { createFullStore } from 'rellx/full';
 
 const store = createFullStore(initialState);
 
-// Добавление middleware
+// Add middleware
 store.use(middleware);
 ```
 
 ### Reactive Store
 
-Реактивная версия с автоматическим отслеживанием.
+Reactive version with automatic tracking.
 
 ```typescript
 import { createReactiveStore } from 'rellx';
 
 const store = createReactiveStore(initialState);
 
-// Доступ к реактивному состоянию
+// Access reactive state
 store.reactive.property = value;
 
-// Получение состояния
+// Get state
 const state = store.getState();
 
-// Установка свойства
+// Set property
 store.setProperty('key', value);
 
-// Получение свойства
+// Get property
 const value = store.getProperty('key');
 ```
 
-## Плагины
+## Plugins
 
-Rellx поддерживает систему плагинов для расширения функциональности:
+Rellx supports a plugin system for extending functionality:
 
 ```typescript
 import { StoreCore } from 'rellx';
@@ -225,7 +225,7 @@ const myPlugin: StorePlugin<MyState> = {
   },
 
   onBeforeUpdate(newState, oldState) {
-    // Можете модифицировать состояние перед обновлением
+    // You can modify state before update
     return newState;
   },
 
@@ -234,9 +234,9 @@ const myPlugin: StorePlugin<MyState> = {
   },
 
   onSubscribe(listener) {
-    // Дополнительная логика при подписке
+    // Additional logic on subscribe
     return () => {
-      // Очистка при отписке
+      // Cleanup on unsubscribe
     };
   },
 
@@ -250,7 +250,7 @@ const store = new StoreCore(initialState, [myPlugin]);
 
 ## DevTools
 
-Rellx включает инструменты разработчика для отладки состояния:
+Rellx includes developer tools for state debugging:
 
 ```typescript
 import { createFullStore } from 'rellx/full';
@@ -264,15 +264,15 @@ const devTools = createDevToolsPlugin(store, {
   maxHistorySize: 50
 });
 
-// Подключение к DevTools серверу
+// Connect to DevTools server
 devTools.connect('ws://localhost:8097');
 ```
 
-Подробнее о DevTools смотрите в документации [rellx-devtools](rellx-devtools/README.md).
+For more information about DevTools, see the [rellx-devtools](rellx-devtools/README.md) documentation.
 
-## Примеры использования
+## Usage Examples
 
-### Todo приложение
+### Todo Application
 
 ```typescript
 import { createFullStore } from 'rellx/full';
@@ -293,7 +293,7 @@ const store = createFullStore<State>({
   filter: 'all'
 });
 
-// Действия
+// Actions
 const addTodo = (text: string) => {
   store.setState((prev) => ({
     ...prev,
@@ -317,14 +317,14 @@ const setFilter = (filter: State['filter']) => {
   store.setState((prev) => ({ ...prev, filter }));
 };
 
-// Подписка на изменения
+// Subscribe to changes
 store.subscribe((state) => {
   console.log('Todos updated:', state.todos);
   console.log('Filter:', state.filter);
 });
 ```
 
-### Счетчик с историей
+### Counter with History
 
 ```typescript
 import { createReactiveStore } from 'rellx';
@@ -344,25 +344,25 @@ store.subscribe((state) => {
   console.log(`History: ${state.history.join(', ')}`);
 });
 
-// Увеличение счетчика
+// Increment counter
 store.reactive.count++;
 store.reactive.history.push(store.reactive.count);
 ```
 
-## Совместимость
+## Compatibility
 
 - Node.js: 14+
-- Браузеры: все современные браузеры (ES2020+)
+- Browsers: all modern browsers (ES2020+)
 - TypeScript: 4.5+
 
-## Лицензия
+## License
 
 Apache License 2.0
 
-## Поддержка
+## Support
 
-Если у вас есть вопросы, предложения или вы нашли баг, пожалуйста, создайте issue в репозитории проекта.
+If you have questions, suggestions, or found a bug, please create an issue in the project repository.
 
-## Вклад в проект
+## Contributing
 
-Мы приветствуем вклад в развитие проекта! Пожалуйста, прочитайте руководство по контрибьюции перед отправкой pull request.
+We welcome contributions to the project! Please read the contribution guide before submitting a pull request.
