@@ -270,6 +270,252 @@ devTools.connect('ws://localhost:8097');
 
 For more information about DevTools, see the [rellx-devtools](rellx-devtools/README.md) documentation.
 
+## Framework Integration
+
+### React
+
+```typescript
+import React, { useEffect, useState } from 'react';
+import { createFullStore } from 'rellx/full';
+
+// Create store
+const store = createFullStore({
+  count: 0,
+  todos: []
+});
+
+// Custom hook
+function useStore<T>(store: ReturnType<typeof createFullStore<T>>) {
+  const [state, setState] = useState(store.getState());
+
+  useEffect(() => {
+    const unsubscribe = store.subscribe((newState) => {
+      setState(newState);
+    });
+    return unsubscribe;
+  }, [store]);
+
+  return [state, store.setState.bind(store)] as const;
+}
+
+// Component
+function Counter() {
+  const [state, setState] = useStore(store);
+
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => setState(prev => ({ ...prev, count: prev.count + 1 }))}>
+        Increment
+      </button>
+    </div>
+  );
+}
+```
+
+### Vue 3
+
+```typescript
+import { ref, onMounted, onUnmounted } from 'vue';
+import { createFullStore } from 'rellx/full';
+
+// Create store
+const store = createFullStore({
+  count: 0,
+  todos: []
+});
+
+// Composable
+function useStore<T>(store: ReturnType<typeof createFullStore<T>>) {
+  const state = ref(store.getState());
+
+  let unsubscribe: (() => void) | null = null;
+
+  onMounted(() => {
+    unsubscribe = store.subscribe((newState) => {
+      state.value = newState;
+    });
+  });
+
+  onUnmounted(() => {
+    unsubscribe?.();
+  });
+
+  return {
+    state,
+    setState: store.setState.bind(store)
+  };
+}
+
+// Component
+export default {
+  setup() {
+    const { state, setState } = useStore(store);
+
+    const increment = () => {
+      setState(prev => ({ ...prev, count: prev.count + 1 }));
+    };
+
+    return {
+      state,
+      increment
+    };
+  },
+  template: `
+    <div>
+      <p>Count: {{ state.count }}</p>
+      <button @click="increment">Increment</button>
+    </div>
+  `
+};
+```
+
+### Angular
+
+```typescript
+import { Injectable, Component, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { createFullStore } from 'rellx/full';
+
+// Service
+@Injectable({ providedIn: 'root' })
+export class StoreService {
+  private store = createFullStore({
+    count: 0,
+    todos: []
+  });
+
+  private stateSubject = new BehaviorSubject(this.store.getState());
+  public state$: Observable<typeof this.store.getState> = this.stateSubject.asObservable();
+
+  constructor() {
+    this.store.subscribe((state) => {
+      this.stateSubject.next(state);
+    });
+  }
+
+  getState() {
+    return this.store.getState();
+  }
+
+  setState(updater: any) {
+    this.store.setState(updater);
+  }
+}
+
+// Component
+@Component({
+  selector: 'app-counter',
+  template: `
+    <div>
+      <p>Count: {{ state.count }}</p>
+      <button (click)="increment()">Increment</button>
+    </div>
+  `
+})
+export class CounterComponent implements OnDestroy {
+  state: any;
+  private subscription: any;
+
+  constructor(private storeService: StoreService) {
+    this.subscription = this.storeService.state$.subscribe(state => {
+      this.state = state;
+    });
+  }
+
+  increment() {
+    this.storeService.setState((prev: any) => ({
+      ...prev,
+      count: prev.count + 1
+    }));
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+}
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
+  import { writable } from 'svelte/store';
+  import { createFullStore } from 'rellx/full';
+
+  // Create Rellx store
+  const rellxStore = createFullStore({
+    count: 0,
+    todos: []
+  });
+
+  // Create Svelte store wrapper
+  const stateStore = writable(rellxStore.getState());
+
+  let unsubscribe: (() => void) | null = null;
+
+  onMount(() => {
+    unsubscribe = rellxStore.subscribe((state) => {
+      stateStore.set(state);
+    });
+  });
+
+  onDestroy(() => {
+    unsubscribe?.();
+  });
+
+  function increment() {
+    rellxStore.setState(prev => ({
+      ...prev,
+      count: prev.count + 1
+    }));
+  }
+</script>
+
+<div>
+  <p>Count: {$stateStore.count}</p>
+  <button on:click={increment}>Increment</button>
+</div>
+```
+
+### Vanilla JavaScript
+
+```javascript
+import { createFullStore } from 'rellx/full';
+
+// Create store
+const store = createFullStore({
+  count: 0,
+  todos: []
+});
+
+// Subscribe to changes
+store.subscribe((state) => {
+  // Update UI when state changes
+  document.getElementById('count').textContent = state.count;
+  renderTodos(state.todos);
+});
+
+// Initial render
+document.getElementById('count').textContent = store.getState().count;
+
+// Event handlers
+document.getElementById('increment').addEventListener('click', () => {
+  store.setState(prev => ({
+    ...prev,
+    count: prev.count + 1
+  }));
+});
+
+function renderTodos(todos) {
+  const container = document.getElementById('todos');
+  container.innerHTML = todos.map(todo => `
+    <div>${todo.text}</div>
+  `).join('');
+}
+```
+
 ## Usage Examples
 
 ### Todo Application
