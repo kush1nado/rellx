@@ -250,11 +250,15 @@ const store = new StoreCore(initialState, [myPlugin]);
 
 ## DevTools
 
-Rellx includes developer tools for state debugging:
+Rellx DevTools is available as a separate package for state debugging:
+
+```bash
+npm install @rellx/devtools --save-dev
+```
 
 ```typescript
 import { createFullStore } from 'rellx/full';
-import { createDevToolsPlugin } from 'rellx/devtools';
+import { createDevToolsPlugin } from '@rellx/devtools';
 
 const store = createFullStore(initialState);
 
@@ -268,7 +272,7 @@ const devTools = createDevToolsPlugin(store, {
 devTools.connect('ws://localhost:8097');
 ```
 
-For more information about DevTools, see the [rellx-devtools](rellx-devtools/README.md) documentation.
+For more information about DevTools, see the [@rellx/devtools](rellx-devtools/README.md) documentation.
 
 ## Framework Integration
 

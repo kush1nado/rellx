@@ -1,6 +1,6 @@
 # Rellx
 
-Universal state manager for JavaScript and TypeScript applications. Rellx provides a simple and powerful API for state management with support for reactivity, middleware, plugins, and DevTools.
+Universal state manager for JavaScript and TypeScript applications. Rellx provides a simple and powerful API for state management with support for reactivity, middleware, and plugins.
 
 ## What is it?
 
@@ -18,7 +18,6 @@ The library offers three modes of operation:
 - **Reactivity** - automatic tracking of nested object changes
 - **Middleware** - extensibility through middleware system
 - **Plugins** - support for custom plugins to extend functionality
-- **DevTools** - tools for debugging and monitoring state
 - **Small size** - lightweight library without unnecessary dependencies
 - **Universal** - works in browser and Node.js
 
@@ -250,11 +249,15 @@ const store = new StoreCore(initialState, [myPlugin]);
 
 ## DevTools
 
-Rellx includes developer tools for state debugging:
+Rellx DevTools is available as a separate package for state debugging:
+
+```bash
+npm install @rellx/devtools --save-dev
+```
 
 ```typescript
 import { createFullStore } from 'rellx/full';
-import { createDevToolsPlugin } from 'rellx/devtools';
+import { createDevToolsPlugin } from '@rellx/devtools';
 
 const store = createFullStore(initialState);
 
@@ -268,7 +271,7 @@ const devTools = createDevToolsPlugin(store, {
 devTools.connect('ws://localhost:8097');
 ```
 
-For more information about DevTools, see the [rellx-devtools](../rellx-devtools/README.md) documentation.
+For more information about DevTools, see the [@rellx/devtools](../rellx-devtools/README.md) documentation.
 
 ## Framework Integration
 
