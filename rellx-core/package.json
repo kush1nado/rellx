@@ -45,7 +45,6 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/jest": "^30.0.0",
-    "@types/ws": "^8.18.1",
     "jest": "^30.0.4",
     "rimraf": "^6.0.1",
     "rollup": "^4.45.1",
@@ -61,7 +60,5 @@
     "test:coverage": "jest --coverage",
     "version": "node scripts/version.js"
   },
-  "dependencies": {
-    "ws": "^8.18.3"
-  }
+  "dependencies": {}
 }

@@ -5,7 +5,7 @@ import {
     DevToolsPlugin,
     ExtendedAction
 } from './protocol';
-import { StoreCore } from '../core';
+import { StoreCore } from 'rellx';
 
 export class DevToolsPluginManager<T = unknown, P = unknown> {
     private client: DevToolsClient<T, P>;

@@ -1,15 +1,32 @@
 {
-  "name": "rellx-devtools",
-  "version": "1.0.0",
-  "description": "DevTools для Rellx State Manager",
-  "private": true,
+  "name": "@rellx/devtools",
+  "version": "1.2.0",
+  "description": "DevTools for Rellx State Manager",
+  "author": "kush1nado",
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "workspaces": [
-    "packages/devtools-ui"
+    "devtools-ui"
   ],
   "scripts": {
-    "dev": "npm run start --workspace=devtools-ui",
-    "build": "npm run build --workspace=devtools-ui",
+    "build": "rollup -c",
+    "build:ui": "npm run build --workspace=devtools-ui",
     "build:extension": "node scripts/build-extension.js",
+    "dev": "npm run start --workspace=devtools-ui",
     "generate-icons": "node scripts/generate-icons.js",
     "test": "npm run test --workspaces",
     "start-server": "node examples/full-devtools-demo.cjs",
@@ -21,15 +38,27 @@
     "state-management",
     "rellx",
     "debugging",
-    "time-travel"
+    "time-travel",
+    "plugins"
   ],
-  "author": "Rellx Team",
-  "license": "MIT",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.4",
     "@types/node": "^20.0.0",
-    "sharp": "^0.34.5"
+    "@types/ws": "^8.18.1",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.45.1",
+    "rollup-plugin-dts": "^6.2.1",
+    "sharp": "^0.34.5",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
+    "rellx": "^1.2.0",
     "ws": "^8.18.3"
+  },
+  "peerDependencies": {
+    "rellx": "^1.2.0"
   }
 }
