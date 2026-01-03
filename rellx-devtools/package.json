@@ -1,5 +1,5 @@
 {
-  "name": "@rellx/devtools",
+  "name": "rellx-devtools",
   "version": "2.0.0",
   "description": "DevTools for Rellx State Manager",
   "author": "kush1nado",
@@ -18,6 +18,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "workspaces": [
     "devtools-ui"
