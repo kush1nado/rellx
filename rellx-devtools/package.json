@@ -22,9 +22,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "workspaces": [
-    "devtools-ui"
-  ],
   "scripts": {
     "build": "rollup -c",
     "build:ui": "npm run build --workspace=devtools-ui",
@@ -45,17 +42,11 @@
     "plugins"
   ],
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-typescript": "^12.1.4",
     "@types/node": "^20.0.0",
     "@types/ws": "^8.18.1",
     "rimraf": "^6.0.1",
-    "rollup": "^4.45.1",
-    "rollup-plugin-dts": "^6.2.1",
     "sharp": "^0.34.5",
-    "tslib": "^2.8.1",
-    "typescript": "^5.8.3"
+    "tslib": "^2.8.1"
   },
   "dependencies": {
     "rellx": "^2.0.0",

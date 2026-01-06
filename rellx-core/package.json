@@ -41,24 +41,17 @@
     }
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-typescript": "^12.1.4",
     "@types/jest": "^30.0.0",
     "jest": "^30.0.4",
     "rimraf": "^6.0.1",
-    "rollup": "^4.45.1",
-    "rollup-plugin-dts": "^6.2.1",
     "ts-jest": "^29.4.0",
-    "tslib": "^2.8.1",
-    "typescript": "^5.8.3"
+    "tslib": "^2.8.1"
   },
   "scripts": {
     "build": "rollup -c",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "version": "node scripts/version.js"
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {}
 }

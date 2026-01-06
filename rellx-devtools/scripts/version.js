@@ -13,6 +13,7 @@ if (!['major', 'minor', 'patch'].includes(versionType)) {
 
 const rootDir = path.resolve(__dirname, '..');
 const corePackageJson = path.join(rootDir, '..', 'rellx-core', 'package.json');
+const devtoolsPackageJson = path.join(rootDir, 'package.json');
 const extensionManifest = path.join(rootDir, 'extension', 'manifest.json');
 
 if (!fs.existsSync(corePackageJson)) {
@@ -46,6 +47,24 @@ fs.writeFileSync(
 );
 console.log(`✓ Updated ${corePackageJson}`);
 
+// Update rellx-devtools package.json
+if (fs.existsSync(devtoolsPackageJson)) {
+  const devtoolsPackage = JSON.parse(fs.readFileSync(devtoolsPackageJson, 'utf8'));
+  devtoolsPackage.version = newVersion;
+  // Also update rellx dependency version
+  if (devtoolsPackage.dependencies && devtoolsPackage.dependencies.rellx) {
+    devtoolsPackage.dependencies.rellx = `^${newVersion}`;
+  }
+  if (devtoolsPackage.peerDependencies && devtoolsPackage.peerDependencies.rellx) {
+    devtoolsPackage.peerDependencies.rellx = `^${newVersion}`;
+  }
+  fs.writeFileSync(
+    devtoolsPackageJson,
+    JSON.stringify(devtoolsPackage, null, 2) + '\n'
+  );
+  console.log(`✓ Updated ${devtoolsPackageJson}`);
+}
+
 if (fs.existsSync(extensionManifest)) {
   const manifest = JSON.parse(fs.readFileSync(extensionManifest, 'utf8'));
   manifest.version = newVersion;
@@ -61,5 +80,7 @@ console.log('\nNext steps:');
 console.log('1. Commit the changes');
 console.log('2. Create a git tag: git tag v' + newVersion);
 console.log('3. Push: git push && git push --tags');
-console.log('4. Publish to npm: cd rellx-core && npm publish');
+console.log('4. Publish to npm:');
+console.log('   - cd rellx-core && npm publish');
+console.log('   - cd rellx-devtools && npm publish');
 

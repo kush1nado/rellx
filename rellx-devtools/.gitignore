@@ -1,14 +1,5 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Testing
-coverage/
-
-# Production
-build/
-dist/
+# Note: Most ignore rules are in root .gitignore
+# This file only contains devtools-specific ignores
 
 # Extension build files (generated)
 extension/devtools/panel/static/
@@ -23,14 +14,3 @@ extension/icons/*.png
 !extension/devtools/devtools.js
 !extension/manifest.json
 !extension/icons/icon.svg
-
-# Misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*

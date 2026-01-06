@@ -1,0 +1,46 @@
+{
+  "name": "rellx-monorepo",
+  "version": "2.0.1",
+  "private": true,
+  "description": "Rellx State Manager - Monorepo",
+  "author": "kush1nado",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "rellx-core",
+    "rellx-devtools",
+    "rellx-devtools/devtools-ui"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "build:core": "npm run build --workspace=rellx-core",
+    "build:devtools": "npm run build --workspace=rellx-devtools",
+    "test": "npm run test --workspaces --if-present",
+    "test:core": "npm run test --workspace=rellx-core",
+    "clean": "npm run clean --workspaces --if-present || true",
+    "version": "node rellx-devtools/scripts/version.js"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^30.0.4",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.45.1",
+    "rollup-plugin-dts": "^6.2.1",
+    "ts-jest": "^29.4.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "overrides": {
+    "rellx-devtools-ui": {
+      "typescript": "^4.9.5"
+    }
+  }
+}
+
