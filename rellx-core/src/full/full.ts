@@ -1,6 +1,9 @@
 import { StoreCore } from '../core';
 
-type Middleware<T> = (store: StoreFull<T>) => (next: Function) => (updater: Function) => void;
+type StateUpdater<T> = (prevState: T) => T;
+type NextFn<T> = (updater: StateUpdater<T>) => void;
+type MiddlewareFn<T> = (next: NextFn<T>) => NextFn<T>;
+type Middleware<T> = (store: StoreFull<T>) => MiddlewareFn<T>;
 
 export class StoreFull<T> extends StoreCore<T> {
     private middlewares: Middleware<T>[] = [];
@@ -13,14 +16,14 @@ export class StoreFull<T> extends StoreCore<T> {
         this.middlewares.push(middleware);
     }
 
-    setState(updater: (prevState: T) => T): void {
+    setState(updater: StateUpdater<T>): void {
         if (this.middlewares.length === 0) {
             super.setState(updater);
             return;
         }
 
         const chain = this.middlewares.map(mw => mw(this));
-        const composed = chain.reduceRight(
+        const composed = chain.reduceRight<NextFn<T>>(
             (next, mw) => mw(next),
             super.setState.bind(this)
         );

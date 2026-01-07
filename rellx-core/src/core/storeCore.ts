@@ -1,4 +1,5 @@
 import {PluginFactory, StorePlugin} from "../types/plugin";
+import {deepEqual} from "./utils";
 
 type Listener<T> = (state: T) => void;
 
@@ -26,7 +27,12 @@ export class StoreCore<T> {
             if (result !== undefined) newState = result;
         }
 
-        if (newState !== oldState) {
+        // Use deep comparison for objects to detect actual changes
+        const hasChanged = typeof newState === 'object' && newState !== null
+            ? !deepEqual(newState, oldState)
+            : newState !== oldState;
+
+        if (hasChanged) {
             this.state = newState;
             this.listeners.forEach(listener => listener(newState));
             this.plugins.forEach(p => p.onAfterUpdate?.(newState, oldState));
