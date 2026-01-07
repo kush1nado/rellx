@@ -17,6 +17,11 @@
     "test": "npm run test --workspaces --if-present",
     "test:core": "npm run test --workspace=rellx-core",
     "clean": "npm run clean --workspaces --if-present || true",
+    "lint": "eslint \"rellx-core/src/**/*.{ts,js}\" \"rellx-devtools/src/**/*.{ts,js}\"",
+    "lint:fix": "eslint \"rellx-core/src/**/*.{ts,js}\" \"rellx-devtools/src/**/*.{ts,js}\" --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "type-check": "npm run type-check --workspaces --if-present",
     "version": "node rellx-devtools/scripts/version.js"
   },
   "devDependencies": {
@@ -25,7 +30,13 @@
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^28.0.0",
     "jest": "^30.0.4",
+    "prettier": "^3.2.5",
     "rimraf": "^6.0.1",
     "rollup": "^4.45.1",
     "rollup-plugin-dts": "^6.2.1",
@@ -40,7 +51,9 @@
   "overrides": {
     "rellx-devtools-ui": {
       "typescript": "^4.9.5"
-    }
+    },
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0"
   }
 }
 
