@@ -24,7 +24,8 @@
   },
   "scripts": {
     "clean": "rimraf dist coverage",
-    "build": "rollup -c",
+    "build": "NODE_ENV=production rollup -c",
+    "build:dev": "rollup -c",
     "build:ui": "npm run build --workspace=devtools-ui",
     "build:extension": "node scripts/build-extension.js",
     "dev": "npm run start --workspace=devtools-ui",

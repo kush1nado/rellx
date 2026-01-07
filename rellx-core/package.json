@@ -49,7 +49,8 @@
   },
   "scripts": {
     "clean": "rimraf dist coverage",
-    "build": "rollup -c",
+    "build": "NODE_ENV=production rollup -c",
+    "build:dev": "rollup -c",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
