@@ -13,7 +13,7 @@
   "scripts": {
     "build": "npm run build:core && npm run build:devtools",
     "build:core": "npm run build --workspace=rellx-core",
-    "build:devtools": "npm run build --workspace=rellx-devtools",
+    "build:devtools": "cd rellx-devtools && npm run build",
     "test": "npm run test:core && npm run test:devtools",
     "test:core": "node node_modules/jest/bin/jest.js --config rellx-core/jest.config.cjs --rootDir rellx-core --testPathIgnorePatterns=node_modules",
     "test:devtools": "node node_modules/jest/bin/jest.js --config rellx-devtools/jest.config.cjs --rootDir rellx-devtools --testPathIgnorePatterns=node_modules",
