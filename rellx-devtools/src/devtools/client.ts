@@ -181,12 +181,11 @@ export class DevToolsClient<T = unknown, P = unknown> {
     }
 
     private flushMessageQueue(): void {
-        while (this.messageQueue.length > 0) {
-            const message = this.messageQueue.shift();
-            if (message) {
-                this.send(message);
-            }
-        }
+        // Process all queued messages efficiently
+        const messages = this.messageQueue.splice(0);
+        messages.forEach(message => {
+            this.send(message);
+        });
     }
 
     subscribe(listener: (msg: DevToolsMessage<T, P>) => void): () => void {
@@ -209,8 +208,18 @@ export class DevToolsClient<T = unknown, P = unknown> {
     }
 
     addState(state: T, action?: Action<P>): void {
+        // Deep clone state to prevent mutations
+        let clonedState: T;
+        try {
+            clonedState = JSON.parse(JSON.stringify(state)) as T;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.error('[DevToolsClient] Failed to clone state:', errorMessage);
+            clonedState = state;
+        }
+
         const stateSnapshot: StateSnapshot<T> = {
-            state: JSON.parse(JSON.stringify(state)),
+            state: clonedState,
             timestamp: Date.now(),
             id: this.generateId(),
             actionId: action?.id
@@ -221,10 +230,12 @@ export class DevToolsClient<T = unknown, P = unknown> {
             this.stateHistory.actions.push(action);
         }
 
+        // Use splice instead of shift for better performance with large arrays
+        // splice is faster than shift for removing first element
         if (this.stateHistory.states.length > this.stateHistory.maxHistorySize) {
-            this.stateHistory.states.shift();
+            this.stateHistory.states.splice(0, 1);
             if (this.stateHistory.actions.length > 0) {
-                this.stateHistory.actions.shift();
+                this.stateHistory.actions.splice(0, 1);
             }
         }
 

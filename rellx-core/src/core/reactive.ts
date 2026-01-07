@@ -24,27 +24,34 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
         const store = this;
 
         try {
+            const isArray = Array.isArray(state);
             return new Proxy(state as ReactiveState<T>, {
             get(target, prop) {
                 if (prop === '__isReactive') return true;
                 if (prop === '__store') return store;
 
-                const value = target[prop as keyof T];
+                const value = isArray 
+                    ? (target as unknown as unknown[])[prop as unknown as number]
+                    : target[prop as keyof T];
 
-                if (value && typeof value === 'object' && !Array.isArray(value) && !(value as ReactiveObject).__isReactive) {
+                if (value && typeof value === 'object' && !(value as ReactiveObject).__isReactive) {
                     const reactiveValue = store.makeReactive(value);
-                    (target as Record<string, unknown>)[prop as string] = reactiveValue;
-                    return (target as Record<string, unknown>)[prop as string] as T[keyof T];
+                    if (isArray) {
+                        (target as unknown as unknown[])[prop as unknown as number] = reactiveValue;
+                    } else {
+                        (target as Record<string, unknown>)[prop as string] = reactiveValue;
+                    }
+                    return reactiveValue as T[keyof T];
                 }
 
-                return value;
+                return value as T[keyof T];
             },
 
             set(target, prop, value) {
                 const oldValue = (target as Record<string, unknown>)[prop as string];
 
                 let reactiveValue: unknown = value;
-                if (value && typeof value === 'object' && !Array.isArray(value) && !(value as ReactiveObject).__isReactive) {
+                if (value && typeof value === 'object' && !(value as ReactiveObject).__isReactive) {
                     reactiveValue = store.makeReactive(value);
                 }
 
@@ -76,7 +83,7 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
     }
 
     private makeReactive<T extends object>(obj: T): T {
-        if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+        if (!obj || typeof obj !== 'object') return obj;
 
         // Check cache
         const cached = this.proxyCache.get(obj);
@@ -88,32 +95,65 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
         let proxy: T;
         
         try {
+            const isArray = Array.isArray(obj);
             proxy = new Proxy(obj as unknown as T & ReactiveObject, {
             get(target, prop) {
                 if (prop === '__isReactive') return true;
 
-                const value = target[prop as keyof T];
-
-                if (value && typeof value === 'object' && !Array.isArray(value) && !(value as ReactiveObject).__isReactive) {
-                    const reactiveValue = store.makeReactive(value);
-                    (target as Record<string, unknown>)[prop as string] = reactiveValue;
-                    return (target as Record<string, unknown>)[prop as string] as T[keyof T];
+                // Intercept array methods to trigger reactivity
+                if (isArray) {
+                    if (prop === 'push' || prop === 'pop' || prop === 'shift' || prop === 'unshift' || prop === 'splice' || prop === 'sort' || prop === 'reverse') {
+                        const array = target as unknown as unknown[] & { [key: string]: (...args: unknown[]) => unknown };
+                        const originalMethod = array[prop as string] as (...args: unknown[]) => unknown;
+                        return (...args: unknown[]) => {
+                            const result = originalMethod.apply(target, args);
+                            store.notifyListeners();
+                            return result;
+                        };
+                    }
                 }
 
-                return value;
+                const value = isArray 
+                    ? (target as unknown as unknown[])[prop as unknown as number]
+                    : target[prop as keyof T];
+
+                if (value && typeof value === 'object' && !(value as ReactiveObject).__isReactive) {
+                    const reactiveValue = store.makeReactive(value);
+                    if (isArray) {
+                        (target as unknown as unknown[])[prop as unknown as number] = reactiveValue;
+                    } else {
+                        (target as Record<string, unknown>)[prop as string] = reactiveValue;
+                    }
+                    return reactiveValue as T[keyof T];
+                }
+
+                return value as T[keyof T];
             },
 
             set(target, prop, value) {
-                const oldValue = (target as Record<string, unknown>)[prop as string];
+                const oldValue = isArray
+                    ? (target as unknown as unknown[])[prop as unknown as number]
+                    : (target as Record<string, unknown>)[prop as string];
 
                 let reactiveValue: unknown = value;
-                if (value && typeof value === 'object' && !Array.isArray(value) && !(value as ReactiveObject).__isReactive) {
+                if (value && typeof value === 'object' && !(value as ReactiveObject).__isReactive) {
                     reactiveValue = store.makeReactive(value);
                 }
 
-                (target as Record<string, unknown>)[prop as string] = reactiveValue;
+                if (isArray) {
+                    (target as unknown as unknown[])[prop as unknown as number] = reactiveValue;
+                } else {
+                    (target as Record<string, unknown>)[prop as string] = reactiveValue;
+                }
 
-                if (!deepEqual(oldValue, reactiveValue)) {
+                // For arrays, also check if we're setting an index (numeric property)
+                // For arrays, numeric indices should trigger notifications
+                const isNumericIndex = typeof prop === 'string' && !isNaN(Number(prop)) && prop !== 'NaN';
+                const shouldNotify = isArray 
+                    ? isNumericIndex || !deepEqual(oldValue, reactiveValue)
+                    : !deepEqual(oldValue, reactiveValue);
+
+                if (shouldNotify) {
                     store.notifyListeners();
                 }
 

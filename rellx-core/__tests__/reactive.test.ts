@@ -1,8 +1,21 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { createReactiveStore, ReactiveStore } from '../src/core/reactive';
 
+interface TestState {
+    count: number;
+    user: {
+        name: string;
+        age: number;
+        preferences: {
+            theme: string;
+            language: string;
+        };
+    };
+    todos: Array<{ id: number; text: string; completed: boolean }>;
+}
+
 describe('ReactiveStore', () => {
-    let store: ReactiveStore<any>;
+    let store: ReactiveStore<TestState>;
 
     beforeEach(() => {
         store = createReactiveStore({
@@ -100,7 +113,14 @@ describe('ReactiveStore', () => {
             const listener = jest.fn();
             store.subscribe(listener);
 
-            const newUser = { name: 'Alice', age: 30 };
+            const newUser = { 
+                name: 'Alice', 
+                age: 30,
+                preferences: {
+                    theme: 'light',
+                    language: 'ru'
+                }
+            };
             store.reactive.user = newUser;
 
             store.reactive.user.age = 31;
@@ -212,7 +232,13 @@ describe('ReactiveStore', () => {
 
     describe('Error handling', () => {
         it('should handle non-object values gracefully', () => {
-            const simpleStore = createReactiveStore({
+            interface SimpleState {
+                count: number;
+                text: string;
+                flag: boolean;
+            }
+
+            const simpleStore = createReactiveStore<SimpleState>({
                 count: 0,
                 text: 'hello',
                 flag: true

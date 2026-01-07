@@ -1,5 +1,11 @@
 import { createFullStore, StoreFull } from '../src/full/full';
 import { loggerMiddleware } from '../src/full/middleware';
+import type { StoreFull as StoreFullType } from '../src/full/full';
+
+type StateUpdater<T> = (prevState: T) => T;
+type NextFn<T> = (updater: StateUpdater<T>) => void;
+type MiddlewareFn<T> = (next: NextFn<T>) => NextFn<T>;
+type Middleware<T> = (store: StoreFullType<T>) => MiddlewareFn<T>;
 
 describe('StoreFull', () => {
     describe('Initialization', () => {
@@ -23,7 +29,7 @@ describe('StoreFull', () => {
     describe('Middleware', () => {
         it('should use middleware when provided', () => {
             const store = createFullStore({ count: 0 });
-            const middleware = jest.fn((store) => (next) => (updater) => {
+            const middleware: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 next(updater);
             });
 
@@ -39,13 +45,13 @@ describe('StoreFull', () => {
             const store = createFullStore({ count: 0 });
             const callOrder: string[] = [];
 
-            const middleware1 = jest.fn((store) => (next) => (updater) => {
+            const middleware1: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 callOrder.push('middleware1-before');
                 next(updater);
                 callOrder.push('middleware1-after');
             });
 
-            const middleware2 = jest.fn((store) => (next) => (updater) => {
+            const middleware2: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 callOrder.push('middleware2-before');
                 next(updater);
                 callOrder.push('middleware2-after');
@@ -79,8 +85,8 @@ describe('StoreFull', () => {
 
         it('should allow middleware to modify state', () => {
             const store = createFullStore({ count: 0 });
-            const middleware = jest.fn((store) => (next) => (updater) => {
-                next((prev) => {
+            const middleware: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
+                next((prev: { count: number }) => {
                     const result = updater(prev);
                     return { ...result, modified: true };
                 });
@@ -97,7 +103,7 @@ describe('StoreFull', () => {
             const listener = jest.fn();
             store.subscribe(listener);
 
-            const middleware = jest.fn((store) => (next) => (updater) => {
+            const middleware: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 // Don't call next, preventing update
             });
 
@@ -110,7 +116,7 @@ describe('StoreFull', () => {
 
         it('should handle middleware chain with errors gracefully', () => {
             const store = createFullStore({ count: 0 });
-            const errorMiddleware = jest.fn((store) => (next) => (updater) => {
+            const errorMiddleware: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 throw new Error('Middleware error');
             });
 
@@ -125,17 +131,17 @@ describe('StoreFull', () => {
             const store = createFullStore({ count: 0 });
             const order: number[] = [];
 
-            const middleware1 = jest.fn((store) => (next) => (updater) => {
+            const middleware1: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 order.push(1);
                 next(updater);
             });
 
-            const middleware2 = jest.fn((store) => (next) => (updater) => {
+            const middleware2: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 order.push(2);
                 next(updater);
             });
 
-            const middleware3 = jest.fn((store) => (next) => (updater) => {
+            const middleware3: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 order.push(3);
                 next(updater);
             });
@@ -152,7 +158,7 @@ describe('StoreFull', () => {
 
     describe('State updates', () => {
         it('should update state correctly with middleware', () => {
-            const store = createFullStore({ count: 0, items: [] });
+            const store = createFullStore<{ count: number; items: number[] }>({ count: 0, items: [] });
             store.setState(prev => ({ ...prev, count: 1, items: [1, 2, 3] }));
 
             expect(store.getState()).toEqual({ count: 1, items: [1, 2, 3] });
@@ -163,7 +169,7 @@ describe('StoreFull', () => {
             const listener = jest.fn();
             store.subscribe(listener);
 
-            const middleware = jest.fn((store) => (next) => (updater) => {
+            const middleware: Middleware<{ count: number }> = jest.fn((store) => (next: NextFn<{ count: number }>) => (updater: StateUpdater<{ count: number }>) => {
                 next(updater);
             });
 
