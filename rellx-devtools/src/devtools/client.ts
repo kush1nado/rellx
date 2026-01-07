@@ -54,10 +54,15 @@ export class DevToolsClient<T = unknown, P = unknown> {
 
     connect(url: string = 'ws://localhost:8097'): void {
         try {
+            if (typeof WebSocket === 'undefined') {
+                throw new Error('WebSocket is not available in this environment');
+            }
+
             this.ws = new WebSocket(url);
             this.setupWebSocketHandlers();
         } catch (error) {
-            console.error('DevTools connection failed:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.error('[DevToolsClient] Connection failed:', errorMessage);
             this.scheduleReconnect();
         }
     }
@@ -75,10 +80,21 @@ export class DevToolsClient<T = unknown, P = unknown> {
 
         this.ws.onmessage = (event) => {
             try {
-                const message = JSON.parse(event.data as string) as DevToolsMessage<T, P>;
+                const data = event.data;
+                if (typeof data !== 'string') {
+                    throw new Error('Expected string data from WebSocket');
+                }
+
+                const message = JSON.parse(data) as DevToolsMessage<T, P>;
+                
+                if (!message || typeof message !== 'object') {
+                    throw new Error('Invalid message format');
+                }
+
                 this.handleMessage(message);
             } catch (error) {
-                console.error('DevTools parse error:', error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                console.error('[DevToolsClient] Parse error:', errorMessage);
             }
         };
 
@@ -89,7 +105,8 @@ export class DevToolsClient<T = unknown, P = unknown> {
         };
 
         this.ws.onerror = (error) => {
-            console.error('DevTools WebSocket error', error);
+            console.error('[DevToolsClient] WebSocket error:', error);
+            // WebSocket errors are also handled in onclose
         };
     }
 
@@ -97,11 +114,16 @@ export class DevToolsClient<T = unknown, P = unknown> {
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
             this.reconnectAttempts++;
             setTimeout(() => {
-                console.log(`DevTools reconnecting... (attempt ${this.reconnectAttempts})`);
-                this.connect();
+                console.log(`[DevToolsClient] Reconnecting... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+                try {
+                    this.connect();
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                    console.error('[DevToolsClient] Reconnection failed:', errorMessage);
+                }
             }, this.reconnectInterval * this.reconnectAttempts);
         } else {
-            console.error('DevTools max reconnection attempts reached');
+            console.error(`[DevToolsClient] Max reconnection attempts (${this.maxReconnectAttempts}) reached`);
         }
     }
 
@@ -173,10 +195,16 @@ export class DevToolsClient<T = unknown, P = unknown> {
     }
 
     send(message: DevToolsMessage<T, P>): void {
-        if (this.isConnected && this.ws?.readyState === WebSocket.OPEN) {
-            this.ws.send(JSON.stringify(message));
-        } else {
-            this.messageQueue.push(message);
+        try {
+            if (this.isConnected && this.ws?.readyState === WebSocket.OPEN) {
+                const data = JSON.stringify(message);
+                this.ws.send(data);
+            } else {
+                this.messageQueue.push(message);
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.error('[DevToolsClient] Send error:', errorMessage);
         }
     }
 

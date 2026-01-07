@@ -23,7 +23,8 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
     private createReactiveState(state: T): ReactiveState<T> {
         const store = this;
 
-        return new Proxy(state as ReactiveState<T>, {
+        try {
+            return new Proxy(state as ReactiveState<T>, {
             get(target, prop) {
                 if (prop === '__isReactive') return true;
                 if (prop === '__store') return store;
@@ -66,7 +67,12 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
 
                 return result;
             }
-        });
+            });
+        } catch (error) {
+            console.error('[ReactiveStore] Failed to create reactive state:', error);
+            // Return non-reactive state if Proxy creation fails
+            return state as ReactiveState<T>;
+        }
     }
 
     private makeReactive<T extends object>(obj: T): T {
@@ -79,7 +85,10 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
         }
 
         const store = this;
-        const proxy = new Proxy(obj as unknown as T & ReactiveObject, {
+        let proxy: T;
+        
+        try {
+            proxy = new Proxy(obj as unknown as T & ReactiveObject, {
             get(target, prop) {
                 if (prop === '__isReactive') return true;
 
@@ -121,11 +130,16 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
 
                 return result;
             }
-        }) as T;
+            }) as T;
 
-        // Cache the proxy
-        this.proxyCache.set(obj, proxy);
-        return proxy;
+            // Cache the proxy
+            this.proxyCache.set(obj, proxy);
+            return proxy;
+        } catch (error) {
+            console.error('[ReactiveStore] Failed to make object reactive:', error);
+            // Return non-reactive object if Proxy creation fails
+            return obj;
+        }
     }
 
     getState(): T {
@@ -133,22 +147,27 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
     }
 
     setState(updater: (prevState: T) => T): void {
-        const newState = updater(this.reactiveState);
+        try {
+            const newState = updater(this.reactiveState);
 
-        let hasChanges = false;
-        Object.keys(newState).forEach(key => {
-            const k = key as keyof T;
-            const oldValue = this.reactiveState[k];
-            const newValue = newState[k];
-            
-            if (!deepEqual(oldValue, newValue)) {
-                this.reactiveState[k] = newValue;
-                hasChanges = true;
+            let hasChanges = false;
+            Object.keys(newState).forEach(key => {
+                const k = key as keyof T;
+                const oldValue = this.reactiveState[k];
+                const newValue = newState[k];
+                
+                if (!deepEqual(oldValue, newValue)) {
+                    this.reactiveState[k] = newValue;
+                    hasChanges = true;
+                }
+            });
+
+            if (hasChanges) {
+                this.notifyListeners();
             }
-        });
-
-        if (hasChanges) {
-            this.notifyListeners();
+        } catch (error) {
+            console.error('[ReactiveStore] Error in setState:', error);
+            throw error;
         }
     }
 

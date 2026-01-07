@@ -19,23 +19,55 @@ export class StoreCore<T> {
     }
 
     setState(updater: (prevState: T) => T): void {
-        const oldState = this.state;
-        let newState = updater(oldState);
+        try {
+            const oldState = this.state;
+            let newState = updater(oldState);
 
-        for (const plugin of this.plugins) {
-            const result = plugin.onBeforeUpdate?.(newState, oldState);
-            if (result !== undefined) newState = result;
-        }
+            // Validate new state is not null/undefined
+            if (newState == null) {
+                throw new Error('State cannot be null or undefined');
+            }
 
-        // Use deep comparison for objects to detect actual changes
-        const hasChanged = typeof newState === 'object' && newState !== null
-            ? !deepEqual(newState, oldState)
-            : newState !== oldState;
+            for (const plugin of this.plugins) {
+                try {
+                    const result = plugin.onBeforeUpdate?.(newState, oldState);
+                    if (result !== undefined) newState = result;
+                } catch (error) {
+                    console.error('[StoreCore] Error in plugin onBeforeUpdate:', error);
+                    throw error;
+                }
+            }
 
-        if (hasChanged) {
-            this.state = newState;
-            this.listeners.forEach(listener => listener(newState));
-            this.plugins.forEach(p => p.onAfterUpdate?.(newState, oldState));
+            // Use deep comparison for objects to detect actual changes
+            const hasChanged = typeof newState === 'object' && newState !== null
+                ? !deepEqual(newState, oldState)
+                : newState !== oldState;
+
+            if (hasChanged) {
+                this.state = newState;
+                try {
+                    this.listeners.forEach(listener => {
+                        try {
+                            listener(newState);
+                        } catch (error) {
+                            console.error('[StoreCore] Error in listener:', error);
+                        }
+                    });
+                } catch (error) {
+                    console.error('[StoreCore] Error notifying listeners:', error);
+                }
+
+                this.plugins.forEach(p => {
+                    try {
+                        p.onAfterUpdate?.(newState, oldState);
+                    } catch (error) {
+                        console.error('[StoreCore] Error in plugin onAfterUpdate:', error);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('[StoreCore] Error in setState:', error);
+            throw error;
         }
     }
 
