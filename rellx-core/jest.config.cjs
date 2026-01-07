@@ -17,14 +17,14 @@ module.exports = {
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov", "html"],
   setupFilesAfterEnv: ["<rootDir>/__tests__/setup.ts"],
-  moduleNameMapping: {
+  moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   transform: {
     "^.+\\.ts$": [
       "ts-jest",
       {
-        tsconfig: "tsconfig.json",
+        tsconfig: "<rootDir>/tsconfig.json",
       },
     ],
   },

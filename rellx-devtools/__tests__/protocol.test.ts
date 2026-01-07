@@ -1,4 +1,3 @@
-import { describe, it, expect } from '@jest/globals';
 import type {
   DevToolsMessageType,
   ActionType,
@@ -94,10 +93,12 @@ describe('Protocol Types', () => {
       const snapshot: StateSnapshot<{ count: number }> = {
         state: { count: 1 },
         timestamp: Date.now(),
+        id: 'test-snapshot-id',
         actionId: 'test-action-id'
       };
       expect(snapshot.state.count).toBe(1);
       expect(snapshot.timestamp).toBeGreaterThan(0);
+      expect(snapshot.id).toBe('test-snapshot-id');
     });
   });
 });

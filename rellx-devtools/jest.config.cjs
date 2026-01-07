@@ -20,7 +20,7 @@ module.exports = {
     "^.+\\.ts$": [
       "ts-jest",
       {
-        tsconfig: "tsconfig.json",
+        tsconfig: "<rootDir>/tsconfig.json",
       },
     ],
   },

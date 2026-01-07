@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { DevToolsClient } from '../src/devtools/client';
 
 // Mock WebSocket
@@ -55,16 +54,17 @@ describe('DevToolsClient', () => {
   });
 
   describe('Message handling', () => {
-    it('should add message listener', () => {
-      const listener = jest.fn();
-      client.onMessage(listener);
-      expect(listener).toBeDefined();
+    it('should subscribe to messages', () => {
+      const listener = () => {};
+      const unsubscribe = client.subscribe(listener);
+      expect(unsubscribe).toBeDefined();
+      expect(typeof unsubscribe).toBe('function');
     });
 
-    it('should remove message listener', () => {
-      const listener = jest.fn();
-      client.onMessage(listener);
-      client.offMessage(listener);
+    it('should unsubscribe from messages', () => {
+      const listener = () => {};
+      const unsubscribe = client.subscribe(listener);
+      unsubscribe();
       expect(listener).toBeDefined();
     });
   });

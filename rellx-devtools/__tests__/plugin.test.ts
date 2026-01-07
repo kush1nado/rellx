@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach } from '@jest/globals';
-import { createLightStore } from 'rellx';
+import { StoreCore } from 'rellx';
 import { DevToolsPluginManager } from '../src/devtools/plugin';
 
 describe('DevToolsPluginManager', () => {
@@ -8,11 +7,11 @@ describe('DevToolsPluginManager', () => {
     name: string;
   }
 
-  let store: ReturnType<typeof createLightStore<TestState>>;
+  let store: StoreCore<TestState>;
   let pluginManager: DevToolsPluginManager<TestState>;
 
   beforeEach(() => {
-    store = createLightStore<TestState>({
+    store = new StoreCore<TestState>({
       count: 0,
       name: 'test'
     });
@@ -40,15 +39,15 @@ describe('DevToolsPluginManager', () => {
 
   describe('State tracking', () => {
     it('should track state changes', () => {
-      store.setState({ count: 1, name: 'updated' });
+      store.setState((prev) => ({ ...prev, count: 1, name: 'updated' }));
       // Plugin manager should track the change
       expect(store.getState().count).toBe(1);
     });
 
     it('should track multiple state changes', () => {
-      store.setState({ count: 1, name: 'test' });
-      store.setState({ count: 2, name: 'test' });
-      store.setState({ count: 3, name: 'test' });
+      store.setState((prev) => ({ ...prev, count: 1 }));
+      store.setState((prev) => ({ ...prev, count: 2 }));
+      store.setState((prev) => ({ ...prev, count: 3 }));
       expect(store.getState().count).toBe(3);
     });
   });
