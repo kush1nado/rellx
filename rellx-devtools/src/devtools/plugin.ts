@@ -6,6 +6,7 @@ import {
     ExtendedAction
 } from './protocol';
 import { StoreCore } from 'rellx';
+import { computeStateDiff } from './diff';
 
 export class DevToolsPluginManager<T = unknown, P = unknown> {
     private client: DevToolsClient<T, P>;
@@ -13,6 +14,8 @@ export class DevToolsPluginManager<T = unknown, P = unknown> {
     private config: DevToolsConfig;
     private plugins: Map<string, DevToolsPlugin<T, P>> = new Map();
     private actionCounter = 0;
+    private previousState: T | null = null;
+    private isRestoring = false;
 
     constructor(
         store: StoreCore<T>,
@@ -30,7 +33,19 @@ export class DevToolsPluginManager<T = unknown, P = unknown> {
             ...config
         };
 
-        this.client = new DevToolsClient<T, P>(this.config);
+        this.client = new DevToolsClient<T, P>({
+            ...this.config,
+            onStateRestore: (state) => {
+                this.isRestoring = true;
+                try {
+                    this.store.setState(() => state as T);
+                } catch (error) {
+                    console.error('[DevTools] Failed to restore state:', error);
+                } finally {
+                    this.isRestoring = false;
+                }
+            }
+        });
         this.initializePlugins();
         this.setupStoreListeners();
     }
@@ -87,6 +102,8 @@ export class DevToolsPluginManager<T = unknown, P = unknown> {
     }
 
     private handleStateChange(state: T): void {
+        if (this.isRestoring) return;
+
         const action: ExtendedAction<P> = {
             type: 'STATE_UPDATE',
             timestamp: Date.now(),
@@ -109,14 +126,40 @@ export class DevToolsPluginManager<T = unknown, P = unknown> {
     }
 
     private sendStateUpdate(state: T, action: ExtendedAction<P>): void {
+        const stateObj = state as Record<string, unknown>;
+        const prevObj = this.previousState as Record<string, unknown> | null;
+
+        let payload: DevToolsMessage<T, P>['payload'] = {
+            action,
+            storeName: this.config.name,
+            storeId: this.config.storeId
+        };
+
+        if (
+            prevObj &&
+            typeof stateObj === 'object' &&
+            stateObj !== null &&
+            !Array.isArray(stateObj)
+        ) {
+            const diff = computeStateDiff(prevObj, stateObj);
+            if (diff) {
+                const diffSize = JSON.stringify(diff).length;
+                const fullSize = JSON.stringify(stateObj).length;
+                if (diffSize < fullSize) {
+                    payload.diff = diff;
+                }
+            }
+        }
+
+        if (!payload.diff) {
+            payload.state = state;
+        }
+
+        this.previousState = JSON.parse(JSON.stringify(state)) as T;
+
         this.client.send({
             type: 'UPDATE',
-            payload: {
-                state,
-                action,
-                storeName: this.config.name,
-                storeId: this.config.storeId
-            },
+            payload,
             timestamp: Date.now(),
             id: this.generateId(),
             storeName: this.config.name,

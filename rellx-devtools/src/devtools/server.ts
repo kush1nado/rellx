@@ -16,6 +16,14 @@ export class DevToolsServer<T, P> {
     private setupConnection() {
         this.wss.on('connection', ws => {
             this.clients.add(ws);
+            ws.on('message', (data: Buffer | string) => {
+                const raw = typeof data === 'string' ? data : data.toString();
+                this.clients.forEach(client => {
+                    if (client !== ws && client.readyState === WebSocket.OPEN) {
+                        client.send(raw);
+                    }
+                });
+            });
             ws.on('close', () => this.clients.delete(ws));
         });
     }

@@ -50,6 +50,8 @@ export interface DevToolsMessage<T = unknown, P = unknown> {
     type: DevToolsMessageType;
     payload: {
         state?: T;
+        /** Shallow diff of changed top-level keys. When present, UI applies diff to previous state. */
+        diff?: Record<string, unknown>;
         action?: Action<P>;
         pluginId?: string;
         pluginData?: unknown;
@@ -77,6 +79,8 @@ export interface DevToolsConfig {
     enableStateExport?: boolean;
     enableActionExport?: boolean;
     plugins?: DevToolsPlugin[];
+    /** Called when state is restored (time travel, import). Use to sync store with DevTools. */
+    onStateRestore?: (state: unknown) => void;
 }
 
 export interface ActionMetadata {

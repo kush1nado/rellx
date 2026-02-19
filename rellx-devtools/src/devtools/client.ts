@@ -258,6 +258,7 @@ export class DevToolsClient<T = unknown, P = unknown> {
         if (stateIndex !== -1) {
             this.stateHistory.currentIndex = stateIndex;
             this.notifyStateChange();
+            this.config.onStateRestore?.(this.getCurrentState());
         }
     }
 
@@ -268,6 +269,7 @@ export class DevToolsClient<T = unknown, P = unknown> {
             if (stateIndex !== -1) {
                 this.stateHistory.currentIndex = stateIndex;
                 this.notifyStateChange();
+                this.config.onStateRestore?.(this.getCurrentState());
             }
         }
     }
@@ -276,6 +278,7 @@ export class DevToolsClient<T = unknown, P = unknown> {
         if (index >= 0 && index < this.stateHistory.states.length) {
             this.stateHistory.currentIndex = index;
             this.notifyStateChange();
+            this.config.onStateRestore?.(this.getCurrentState());
         }
     }
 
@@ -308,6 +311,7 @@ export class DevToolsClient<T = unknown, P = unknown> {
             this.stateHistory.actions = data.actions || [];
             this.stateHistory.currentIndex = this.stateHistory.states.length - 1;
             this.notifyStateChange();
+            this.config.onStateRestore?.(this.getCurrentState());
         } catch (error) {
             console.error('Failed to import state:', error);
         }

@@ -4,8 +4,9 @@ import "./App.css";
 interface DevToolsMessage {
   type: string;
   payload: {
-    state?: any;
-    action?: any;
+    state?: unknown;
+    diff?: Record<string, unknown>;
+    action?: Record<string, unknown>;
     storeName?: string;
     storeId?: string;
   };
@@ -13,6 +14,22 @@ interface DevToolsMessage {
   id: string;
   storeName?: string;
   storeId?: string;
+}
+
+function applyStateDiff(
+  base: Record<string, unknown>,
+  diff: Record<string, unknown>
+): Record<string, unknown> {
+  const result = { ...base };
+  for (const key of Object.keys(diff)) {
+    const value = diff[key];
+    if (value === undefined && Object.prototype.hasOwnProperty.call(diff, key)) {
+      delete result[key];
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
 }
 
 interface StateHistory {
@@ -40,6 +57,7 @@ function App() {
     currentIndex: -1,
   });
   const [ws, setWs] = useState<WebSocket | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [actionFilter, setActionFilter] = useState<string>("ALL");
@@ -108,6 +126,7 @@ function App() {
       };
 
       setWs(websocket);
+      wsRef.current = websocket;
     } catch (err) {
       setError("Failed to connect to DevTools server");
       console.error("Connection error:", err);
@@ -118,6 +137,7 @@ function App() {
     if (ws) {
       ws.close();
       setWs(null);
+      wsRef.current = null;
     }
   }, [ws]);
 
@@ -148,7 +168,7 @@ function App() {
           break;
 
         case "UPDATE":
-          if (message.payload.state) {
+          if (message.payload.state || message.payload.diff) {
             setStateHistory((prev) => {
               const isDuplicate = prev.actions.some(
                 (action) => action.id === message.payload.action?.id
@@ -158,8 +178,21 @@ function App() {
                 return prev;
               }
 
+              let resolvedState: unknown;
+              if (message.payload.state) {
+                resolvedState = message.payload.state;
+              } else if (message.payload.diff && prev.states.length > 0) {
+                const baseState = prev.states[prev.states.length - 1].state;
+                resolvedState = applyStateDiff(
+                  baseState as Record<string, unknown>,
+                  message.payload.diff
+                );
+              } else {
+                return prev;
+              }
+
               const newState = {
-                state: message.payload.state,
+                state: resolvedState,
                 timestamp: message.timestamp,
                 id: message.id,
                 actionId: message.payload.action?.id,
@@ -179,7 +212,7 @@ function App() {
 
               // Обновляем текущее состояние только если следим за последним
               if (isFollowingLatest) {
-                setCurrentState(message.payload.state);
+                setCurrentState(resolvedState);
               }
 
               return {
@@ -195,17 +228,30 @@ function App() {
     [] // Убираем isPaused из зависимостей, так как используем isPausedRef
   );
 
+  const sendToServer = useCallback((message: Record<string, unknown>) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(message));
+    }
+  }, []);
+
   const timeTravel = useCallback(
     (index: number) => {
       if (index >= 0 && index < stateHistory.states.length) {
-        setCurrentState(stateHistory.states[index].state);
+        const stateSnapshot = stateHistory.states[index];
+        setCurrentState(stateSnapshot.state);
         setStateHistory((prev) => ({
           ...prev,
           currentIndex: index,
         }));
+        sendToServer({
+          type: "TIME_TRAVEL",
+          payload: { stateId: stateSnapshot.id, actionId: stateSnapshot.actionId },
+          timestamp: Date.now(),
+          id: `tt-${Date.now()}`,
+        });
       }
     },
-    [stateHistory.states]
+    [stateHistory.states, sendToServer]
   );
 
   const jumpToAction = useCallback(
@@ -229,7 +275,13 @@ function App() {
       currentIndex: -1,
     });
     setCurrentState(null);
-  }, []);
+    sendToServer({
+      type: "CLEAR",
+      payload: {},
+      timestamp: Date.now(),
+      id: `clear-${Date.now()}`,
+    });
+  }, [sendToServer]);
 
   const togglePause = useCallback(() => {
     setIsPaused((prev) => {
