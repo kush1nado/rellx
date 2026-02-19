@@ -177,6 +177,28 @@ describe('ReactiveStore', () => {
                 count: 10
             }));
         });
+
+        it('should remove keys not present in newState', () => {
+            interface StateWithOptional {
+                count: number;
+                name?: string;
+            }
+            const storeWithOptional = createReactiveStore<StateWithOptional>({
+                count: 0,
+                name: 'initial'
+            });
+
+            const listener = jest.fn();
+            storeWithOptional.subscribe(listener);
+
+            storeWithOptional.setState(() => ({ count: 1 }));
+
+            expect(storeWithOptional.getState()).toEqual({ count: 1 });
+            expect('name' in storeWithOptional.getState()).toBe(false);
+            expect(listener).toHaveBeenCalledWith(expect.objectContaining({
+                count: 1
+            }));
+        });
     });
 
     describe('Reactive state access', () => {
@@ -227,6 +249,64 @@ describe('ReactiveStore', () => {
 
             expect(listener1).toHaveBeenCalledTimes(1);
             expect(listener2).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('destroy and cleanup', () => {
+        it('should not trigger listeners after destroy', () => {
+            const listener = jest.fn();
+            store.subscribe(listener);
+
+            store.destroy();
+            store.reactive.count = 999;
+
+            expect(listener).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('Array methods', () => {
+        it('should trigger listeners on splice', () => {
+            const listener = jest.fn();
+            store.subscribe(listener);
+
+            store.reactive.todos.splice(1, 1);
+
+            expect(listener).toHaveBeenCalledWith(expect.objectContaining({
+                todos: expect.arrayContaining([
+                    expect.objectContaining({ id: 1, text: 'Learn Rellx' })
+                ])
+            }));
+            expect(store.reactive.todos).toHaveLength(1);
+        });
+
+        it('should trigger listeners on shift', () => {
+            const listener = jest.fn();
+            store.subscribe(listener);
+
+            store.reactive.todos.shift();
+
+            expect(listener).toHaveBeenCalled();
+            expect(store.reactive.todos[0]).toEqual(
+                expect.objectContaining({ id: 2, text: 'Build app' })
+            );
+        });
+
+        it('should trigger listeners on unshift', () => {
+            const listener = jest.fn();
+            store.subscribe(listener);
+
+            store.reactive.todos.unshift({
+                id: 0,
+                text: 'First',
+                completed: false
+            });
+
+            expect(listener).toHaveBeenCalledWith(expect.objectContaining({
+                todos: expect.arrayContaining([
+                    expect.objectContaining({ id: 0, text: 'First' })
+                ])
+            }));
+            expect(store.reactive.todos[0].text).toBe('First');
         });
     });
 

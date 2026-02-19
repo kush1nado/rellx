@@ -191,16 +191,26 @@ export class ReactiveStore<T extends object> extends StoreCore<T> {
             const newState = updater(this.reactiveState);
 
             let hasChanges = false;
-            Object.keys(newState).forEach(key => {
+            const oldKeys = Object.keys(this.reactiveState);
+            const newKeys = Object.keys(newState);
+
+            for (const key of oldKeys) {
+                if (!newKeys.includes(key)) {
+                    delete (this.reactiveState as Record<string, unknown>)[key];
+                    hasChanges = true;
+                }
+            }
+
+            for (const key of newKeys) {
                 const k = key as keyof T;
                 const oldValue = this.reactiveState[k];
                 const newValue = newState[k];
-                
+
                 if (!deepEqual(oldValue, newValue)) {
                     this.reactiveState[k] = newValue;
                     hasChanges = true;
                 }
-            });
+            }
 
             if (hasChanges) {
                 this.notifyListeners();
