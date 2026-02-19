@@ -70,9 +70,39 @@ describe('DevToolsClient', () => {
   });
 
   describe('State history', () => {
-    it('should manage state history', () => {
-      expect(client).toBeDefined();
-      // Client should have state history management
+    it('should add state and update history', () => {
+      const action = { type: 'STATE_UPDATE' as const, timestamp: Date.now(), id: 'a1', name: 'Test' };
+      client.addState({ count: 1 }, action);
+      client.addState({ count: 2 }, { ...action, id: 'a2' });
+
+      const history = client.getStateHistory();
+      expect(history.states).toHaveLength(2);
+      expect(history.states[0].state).toEqual({ count: 1 });
+      expect(history.states[1].state).toEqual({ count: 2 });
+      expect(client.getCurrentState()).toEqual({ count: 2 });
+    });
+
+    it('should jump to state by index', () => {
+      client.addState({ count: 1 }, { type: 'STATE_UPDATE', timestamp: 0, id: 'a1' });
+      client.addState({ count: 2 }, { type: 'STATE_UPDATE', timestamp: 0, id: 'a2' });
+      client.addState({ count: 3 }, { type: 'STATE_UPDATE', timestamp: 0, id: 'a3' });
+
+      client.timeTravel(0);
+      expect(client.getCurrentState()).toEqual({ count: 1 });
+
+      client.timeTravel(2);
+      expect(client.getCurrentState()).toEqual({ count: 3 });
+    });
+
+    it('should export and import state', () => {
+      client.addState({ count: 1 }, { type: 'STATE_UPDATE', timestamp: 0, id: 'a1' });
+      const exported = client.exportState();
+
+      client.clearHistory();
+      expect(client.getCurrentState()).toBeNull();
+
+      client.importState(exported);
+      expect(client.getCurrentState()).toEqual({ count: 1 });
     });
   });
 });

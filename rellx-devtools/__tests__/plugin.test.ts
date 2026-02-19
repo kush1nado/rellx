@@ -60,5 +60,37 @@ describe('DevToolsPluginManager', () => {
       expect(manager).toBeDefined();
     });
   });
+
+  describe('createDevToolsPlugin', () => {
+    it('should create plugin via factory', () => {
+      const { createDevToolsPlugin } = require('../src/devtools/plugin');
+      const manager = createDevToolsPlugin(store, { name: 'FactoryStore' });
+      expect(manager).toBeDefined();
+      expect(manager.getConfig().name).toBe('FactoryStore');
+    });
+  });
+
+  describe('State export and import', () => {
+    it('should export state history', () => {
+      store.setState((prev) => ({ ...prev, count: 5 }));
+      const exported = pluginManager.exportState();
+      const parsed = JSON.parse(exported);
+      expect(parsed.states).toBeDefined();
+      expect(parsed.states.length).toBeGreaterThan(0);
+      expect(parsed.states[parsed.states.length - 1].state.count).toBe(5);
+    });
+  });
+
+  describe('Time travel and state restore', () => {
+    it('should restore store state when time traveling', () => {
+      store.setState((prev) => ({ ...prev, count: 1 }));
+      store.setState((prev) => ({ ...prev, count: 2 }));
+      store.setState((prev) => ({ ...prev, count: 3 }));
+
+      pluginManager.timeTravel(0);
+
+      expect(store.getState().count).toBe(1);
+    });
+  });
 });
 
