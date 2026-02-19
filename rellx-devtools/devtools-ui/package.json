@@ -1,6 +1,6 @@
 {
   "name": "rellx-devtools-ui",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
